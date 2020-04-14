@@ -23,7 +23,7 @@ So, I've done some debating... I am going to start with an app that does 'envelo
     * manage transactions to envelopes
 
 ## Requires Adding A File to Build and Run
-In *root*/client, create a file 'auth_config.json'
+In *root*/client, create a file '**auth_config.json**'
 
 Add the following lines, update with your Auth0 information and save
 ```json
