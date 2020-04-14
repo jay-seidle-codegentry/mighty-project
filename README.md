@@ -21,3 +21,14 @@ So, I've done some debating... I am going to start with an app that does 'envelo
     * add or delete funding templates
     * fund envelopes
     * manage transactions to envelopes
+
+## Requires Adding A File to Build and Run
+In *root*/client, create a file 'auth_config.json'
+
+Add the following lines, update with your Auth0 information and save
+```json
+{
+    "domain": "your-app-domain.auth0.com",
+    "clientId": "your-client-id"
+}
+```
