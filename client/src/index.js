@@ -43,7 +43,7 @@ window.setState = (changes) => {
 /* eslint no-restricted-globals: 0*/
 let initState = {
   started: Date.now(),
-  location: location.pathname.replace(/^\/?|\/$/g, "")
+  location: location.pathname.replace(/^\/?|\/$/g, ""),
 }
 
 window.setState(initState);

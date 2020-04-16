@@ -1,16 +1,17 @@
 import React from 'react';
-import Main from './Components/Main';
-import Secret from './Components/Secret';
-import NotFound from './Components/NotFound';
-import CallBack from './Components/Callback';
+import Main from './Components/main/Main';
+import Secret from './Components/secret/Secret';
+import NotFound from './Components/notfound/NotFound';
+import CallBack from './Components/callback/Callback';
 import { useAuth0 } from "./react-auth0-spa";
-import NavBar from './Components/NavBar';
+import NavBar from './Components/navbar/NavBar';
 import logo from './logo.svg';
 import './App.css';
 
 function App(props) {
+  console.log(useAuth0);
   const { isAuthenticated, loading } = useAuth0();
-
+console.log(isAuthenticated);
   if (loading) {
     return (<div>Loading...</div>);
   }
