@@ -9,9 +9,9 @@ import logo from './logo.svg';
 import './App.css';
 
 function App(props) {
-  console.log(useAuth0);
+  //console.log(useAuth0);
   const { isAuthenticated, loading } = useAuth0();
-console.log(isAuthenticated);
+//console.log(isAuthenticated);
   if (loading) {
     return (<div>Loading...</div>);
   }
@@ -45,6 +45,7 @@ console.log(isAuthenticated);
   <p>{props.started}</p>
         <a
           className="App-link"
+          data-testid="learn-link"
           href="https://reactjs.org"
           target="_blank"
           rel="noopener noreferrer"
