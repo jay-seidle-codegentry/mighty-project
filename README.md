@@ -4,7 +4,7 @@ So I am Development Manager / Delivery Owner in the Finance Industry.  I like to
 ## For Starters
 This will be:
 - a React client project, using Create React App
-- use Enzyme and Jest for testing
+- use Testing-Library and Jest for testing
 - will use Test Driven Development (TDD - tests first)
 
 ## What's the App
