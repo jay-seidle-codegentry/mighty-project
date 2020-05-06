@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { ProfileContext } from "../Components/Profile/ProfileProvider";
 
-export const ProfileConsumerMock = (props) => {
+var ProfileConsumerMock = (props) => {
   const profileContext = useContext(ProfileContext);
 
   const saveData = () => {
@@ -10,9 +10,10 @@ export const ProfileConsumerMock = (props) => {
 
   return (
     <div>
+      <p>This is REALLY SECRET stuff. {props.location}</p>
       <div>
-        <p>Interesting Stuff:{profileContext.nickName}</p>
-        <p>Interesting Date:{profileContext.onBoarded}</p>
+        <p data-testid="nn">{profileContext.nickName}</p>
+        <p>{profileContext.onBoarded}</p>
       </div>
       <button onClick={profileContext.setFetchProfile}>UGH</button>
       <button onClick={saveData}>Save It</button>

@@ -1,14 +1,12 @@
 import React from "react";
-import { render } from "@testing-library/react";
+import { render, waitForElement } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { useAuth0 } from "../../react-auth0-spa";
 import { getProfile, setProfile } from "../../usecases/user-api.usecase";
 import { successResponse, errorResponse } from "../../utils/json.utils";
-import { ProfileContext, ProfileProvider } from "./ProfileProvider";
-//import { ProfileConsumerMock } from "../../mocks/LanguageConsumer.mock";
-import Secret from "../secret/Secret";
-import { act } from "react-dom/test-utils";
+import { ProfileProvider } from "./ProfileProvider";
+import ProfileConsumerMock from "../../mocks/ProfileConsumer.mock";
 
 // create a dummy Auth0 profile
 const user = {
@@ -32,7 +30,6 @@ describe("With Application Container", () => {
       loginWithRedirect: jest.fn(),
       getTokenSilently: jest.fn(),
     });
-    //getProfile.mock.fn();
     setProfile.mockReturnValue(
       successResponse({
         exists: true,
@@ -43,9 +40,6 @@ describe("With Application Container", () => {
       })
     );
     getProfile.mockReturnValue(
-      //async () => {
-      //return (
-      //    Promise.resolve(
       successResponse({
         exists: true,
         nickName: "Bubba",
@@ -53,45 +47,30 @@ describe("With Application Container", () => {
         onBoarded: Date.now,
         errorState: {},
       })
-      //)
     );
-    //});
-    // setProfile.mockReturnValue((token, profile) => {
-    //     return             successResponse({
-    //         exists: true,
-    //         nickName: "Bubba",
-    //         email: "",
-    //         onBoarded: Date.now,
-    //         errorState: {},
-    //     });
-
-    // });
-    //     return (
-    //         successResponse({
-    //             exists: true,
-    //             nickName: profile.nickName,
-    //             email: profile.email,
-    //             onBoarded: Date.now,
-    //             errorState: {},
-    //         })
-    //     );
-    // });
   });
 
-  it("ProfileProvider Component is loading", () => {
-    const { getByText, getByTestId, container } = render(<ProfileProvider />);
-    expect(container).toBeTruthy();
-  });
+  // it("ProfileProvider Component is loading", async () => {
+  //   const { getByText, getByTestId, container } = render(<ProfileProvider />);
+  //   const result = await waitForElement(
+  //     () => {
+  //       (container.innerHTML.length >= 5);
+  //     },
+  //     { container }
+  //   );
+  //   expect(container).toBeTruthy();
+  // });
 
-  it("ProfileProvider passes profile", () => {
-      act(async () => {
+  it("ProfileProvider passes profile - get Profile Value", async () => {
         const { getByText, getByTestId, container } = render(
             <ProfileProvider>
-              <Secret />
+              <ProfileConsumerMock />
             </ProfileProvider>
           );
-          console.log(container.innerHTML);
-          expect(true).toBeTruthy();      
-      });
+          const result = await waitForElement(
+            () => getByText("Bubba")
+          );
+          expect(result).toBeTruthy();
+          expect(result).toHaveTextContent("Bubba");
   });
 });
