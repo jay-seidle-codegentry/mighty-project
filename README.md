@@ -74,3 +74,7 @@ https://medium.com/@rishabhsrao/mocking-and-testing-fetch-with-jest-c4d670e2e167
 
 Testing with click and wait
 https://www.youtube.com/watch?time_continue=42&v=SSyy2sHpmIA&feature=emb_logo
+
+Testing Async API with Hooks OMG
+https://testing-library.com/docs/dom-testing-library/api-async
+https://github.com/testing-library/react-testing-library/issues/441#issuecomment-520977388 
