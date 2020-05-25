@@ -9,6 +9,7 @@ import { Grid } from "@material-ui/core";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import SettingsIcon from "@material-ui/icons/Settings";
 import DeleteIcon from "@material-ui/icons/Delete";
+import CurrencyAmount from "../../Components/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -18,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.pxToRem(17),
     textAlign: "right",
     marginRight: "10px",
-    color: "green",
     fontWeight: "800",
   },
   secondaryHeading: {
@@ -49,7 +49,9 @@ export default function TrialAccounts() {
         >
           <Grid container>
             <Grid item xs={5} sm={3}>
-              <Typography className={classes.heading}>$13,807.53</Typography>
+              <Typography className={classes.heading}>
+                <CurrencyAmount amount="13807.53" />
+              </Typography>
             </Grid>
             <Grid item xs={5} sm={8}>
               <Typography className={classes.secondaryHeading}>
@@ -67,7 +69,7 @@ export default function TrialAccounts() {
             component="div"
           >
             <Grid container>
-              <Grid style={{marginLeft:"auto"}} item>
+              <Grid style={{ marginLeft: "auto" }} item>
                 <SettingsIcon style={{ paddingRight: "10px" }} />
                 <DeleteIcon />
               </Grid>
@@ -86,7 +88,9 @@ export default function TrialAccounts() {
         >
           <Grid container>
             <Grid item xs={5} sm={3}>
-              <Typography className={classes.heading}>$1,201.79</Typography>
+              <Typography className={classes.heading}>
+                <CurrencyAmount amount="1201.79" />
+              </Typography>
             </Grid>
             <Grid item xs={5} sm={8}>
               <Typography className={classes.secondaryHeading}>
@@ -104,7 +108,7 @@ export default function TrialAccounts() {
             component="div"
           >
             <Grid container>
-              <Grid style={{marginLeft:"auto"}} item>
+              <Grid style={{ marginLeft: "auto" }} item>
                 <SettingsIcon style={{ paddingRight: "10px" }} />
                 <DeleteIcon />
               </Grid>
@@ -123,7 +127,9 @@ export default function TrialAccounts() {
         >
           <Grid container>
             <Grid item xs={5} sm={3}>
-              <Typography style={{color:"red"}} className={classes.heading}>$978.09</Typography>
+              <Typography className={classes.heading}>
+                <CurrencyAmount amount="-978.09" />
+              </Typography>
             </Grid>
             <Grid item xs={5} sm={8}>
               <Typography className={classes.secondaryHeading}>
@@ -141,7 +147,7 @@ export default function TrialAccounts() {
             component="div"
           >
             <Grid container>
-              <Grid style={{marginLeft:"auto"}} item>
+              <Grid style={{ marginLeft: "auto" }} item>
                 <SettingsIcon style={{ paddingRight: "10px" }} />
                 <DeleteIcon />
               </Grid>

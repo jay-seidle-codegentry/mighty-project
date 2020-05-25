@@ -1,4 +1,10 @@
 const es = {
+  Currency: {
+    decimalCount: 2,
+    currencySymbol: "$",
+    decimalSymbol: ".",
+    thousandsSymbol: ",",
+  },
   Title: "Dinero Absoluto",
   WelcomeMessage1: "¿Estas listo ahora?",
   WelcomeMessage2: "¡Recupera el control de tu dinero!",

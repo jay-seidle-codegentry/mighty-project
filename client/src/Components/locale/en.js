@@ -1,4 +1,10 @@
 const en = {
+  Currency: {
+    decimalCount: 2,
+    currencySymbol: "$",
+    decimalSymbol: ".",
+    thousandsSymbol: ",",
+  },
   Title: "Outright Money",
   WelcomeMessage1: "Are you ready?",
   WelcomeMessage2: "Take back control of your money!",
