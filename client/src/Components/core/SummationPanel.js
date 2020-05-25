@@ -86,8 +86,8 @@ export const SummationPanel = (props) => {
 
   return (
     <ExpansionPanel
-    //expanded={expanded === id}
-    //onChange={handleChange(id)}
+    expanded={props.expanded}
+    onChange={props.onChange}
     >
       <ExpansionPanelSummary
         expandIcon={<ExpandMoreIcon />}

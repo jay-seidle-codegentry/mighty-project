@@ -48,7 +48,13 @@ export default function TrialEnvelopes() {
         expanded={expanded === "panel1"}
         onChange={handleChange("panel1")}
       >
-        <SummationPanel id="panel999" title="Whoa Thingy" detail={things} />
+        <SummationPanel
+          expanded={expanded === "panel999"}
+          onChange={handleChange("panel999")}
+          id="panel999"
+          title="Whoa Thingy"
+          detail={things}
+        />
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1bh-content"

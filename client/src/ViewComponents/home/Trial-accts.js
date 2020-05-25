@@ -61,6 +61,8 @@ export default function TrialAccounts() {
   return (
     <div className={classes.root}>
        <SummationPanel
+        expanded={expanded === "panel999"}
+        onChange={handleChange("panel999")}
         id="panel999"
         title="Whoa Thingy"
         detail={things}
