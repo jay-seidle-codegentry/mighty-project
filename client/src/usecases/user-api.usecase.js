@@ -1,51 +1,38 @@
-import { successResponse, errorResponse } from "../utils/json.utils";
-import { fetchIt } from "../utils/service.utils";
+import { fetchIt } from "../utils/FetchIt";
+require("dotenv");
 
-//const profile = "http://localhost:3001/api/profile";
-const extApi = "http://localhost:3001/api/external";
-const timeStamp = "http://localhost:3001/api/timestamp";
+const host =
+  process.env.REACT_APP_API_ORIGIN + ":" + process.env.REACT_APP_API_PORT;
+const profile = "/api/profile";
+//const extApi = "/api/external";
+//const timeStamp = "/api/timestamp";
 
-export const getProfile = async (token) => {
-  var response;
-  try {
-    const responseData = await fetchIt({ token: token, endPoint: extApi });
-
-    response = successResponse({
-        exists: true,
-        nickName: responseData.msg,
-        email: "",
-        onBoarded: Date.now,
-        errorState: {},      
-    });
-  } catch (error) {
-    console.error(error);
-    response = errorResponse(error);
-  }
-
-  return response;
+export const getProfile = async (params) => {
+  const { token } = params;
+  const responseData = await fetchIt(host + profile, token);
+  return responseData;
 };
 
-export const setProfile = async (token, profile) => {
-    return successResponse({
-        exists: true,
-        nickName: profile.nickName,
-        email: profile.email,
-        onBoarded: Date.now,
-        errorState: {},      
-    });
+export const setProfile = async (params) => {
+  console.log(params);
+  const { token, body } = params;
+  console.log(body);
+  const responseData = await fetchIt(host + profile, token, body);
+  return responseData;
 };
 
 export const updateProfile = async (token) => {};
 
 export const getTimestamp = async () => {
-  var response;
-  try {
-    const responseData = await fetchIt({ endPoint: timeStamp });
-
-    response = successResponse(responseData);
-  } catch (error) {
-    console.error(error);
-    response = errorResponse(error);
-  }
-  return response;
+  // var response;
+  // try {
+  //   const responseData = { data: "pizza" }; //await useFetch({ endPoint: timeStamp });
+  //   response = successResponse(responseData);
+  // } catch (error) {
+  //   console.error(error);
+  //   response = errorResponse(error);
+  // }
+  // return response;
 };
+
+export default getProfile;

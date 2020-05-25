@@ -4,6 +4,7 @@ import { useAuth0 } from "../../react-auth0-spa";
 import { Typography, Button, Link } from "@material-ui/core";
 import SimpleMenu from "../simple-menu/SimpleMenu";
 import Image from "../../imges/josh-appel-NeTPASr-bmQ-unsplash-2k.jpg";
+import Howto from "../../imges/signup-login.png";
 import LanguageSelector from "../locale/LanguageSelector";
 import { LanguageContext } from "../locale/LanguageProvider";
 
@@ -43,6 +44,13 @@ const styles = {
     top: 0,
     right: 0,
   },
+  shrinkImage: {
+    maxHeight: "130px",
+    padding: "5px"
+  },
+  menu: {
+    padding: "30px",
+  }
 };
 
 export const LandingPage = (props) => {
@@ -53,7 +61,7 @@ export const LandingPage = (props) => {
     <div className="App">
       <header className="App-header" style={styles.paperContainer}>
         <LanguageSelector style={styles.floatLanguage} />
-        <SimpleMenu />
+        <SimpleMenu style={styles.menu} />
         <Typography style={styles.textStyling} variant="h3" component="h2">
           {T.WelcomeMessage1}
         </Typography>
@@ -68,6 +76,7 @@ export const LandingPage = (props) => {
         >
           {T.Login}
         </Button>
+        <img style={styles.shrinkImage} src={Howto} alt={T.InstructionsLogInOut} />
         <Typography
           style={styles.floatIt}
           variant="caption"

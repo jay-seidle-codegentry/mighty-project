@@ -1,27 +1,44 @@
-import React from "react";
-import { useAuth0 } from "../../react-auth0-spa";
+import React, { useContext } from "react";
+import NavBar from "../../Components/navbar/NavBar";
+import { Paper } from "@material-ui/core";
+import { ViewContext } from "../view/ViewProvider";
+import { ProfileContext } from "../Profile/ProfileProvider";
+import Views from "../../ViewComponents";
 
-var Main = (props) => {
-  //const dotenv = require('dotenv');
-  const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
+const styles = {
+  viewContainer: {
+    minHeight: "88vh",
+  },
+};
+
+export var Main = (props) => {
+  const { exists } = useContext(ProfileContext);
+  const { view } = useContext(ViewContext);
+
+  let SelectedComponent;
+  switch (view) {
+    case "account":
+      SelectedComponent = Views.UserAccount;
+      break;
+    case "profile":
+      SelectedComponent = Views.View;
+      break;
+    case "editProfile":
+      SelectedComponent = Views.Edit;
+      break;
+    default:
+      if (!exists) {
+        SelectedComponent = Views.Edit;
+      } else {
+        SelectedComponent = Views.Home;
+      }
+  }
   return (
     <div>
-      <p>{process.env.REACT_APP_EAT_PIZZA}</p>
-      {isAuthenticated && <p>User: {user.sub}</p>}
-      <p>
-        <span>Please Login First:</span>
-        {!isAuthenticated && (
-          <button data-testid="login" onClick={() => loginWithRedirect({})}>
-            Log in
-          </button>
-        )}
-
-        {isAuthenticated && (
-          <button data-testid="logout" onClick={() => logout()}>
-            Log out
-          </button>
-        )}
-      </p>
+      <NavBar />
+      <Paper style={styles.viewContainer} elevation={3}>
+        <SelectedComponent />
+      </Paper>
     </div>
   );
 };

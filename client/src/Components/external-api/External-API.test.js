@@ -1,6 +1,7 @@
 import React from "react";
 import { render, fireEvent, waitForElement } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { act } from "react-dom/test-utils";
 
 import { successResponse, errorResponse } from "../../utils/json.utils";
 import { ExternalApi } from "./External-API";
@@ -9,7 +10,6 @@ import {
   getTimestamp,
   getExternalApi,
 } from "../../usecases/external-api-usecases";
-import { act } from "react-dom/test-utils";
 
 // create a dummy Auth0 profile
 const user = {

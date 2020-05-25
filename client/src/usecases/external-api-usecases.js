@@ -1,5 +1,5 @@
 import { successResponse, errorResponse } from "../utils/json.utils";
-import { fetchIt } from "../utils/service.utils";
+import { fetchIt } from "../utils/useFetchIt";
 
 const extApi = "http://localhost:3001/api/external";
 const timeStamp = "http://localhost:3001/api/timestamp";

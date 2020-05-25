@@ -1,71 +1,82 @@
 import React, { useContext, useState } from "react";
+import { getProfile } from "../../usecases/user-api.usecase";
+//import ProfileImage from "../../imges/searchpng.com-deafult-profile-icon-transparent-png-free-download.png";
+//import ProfileImage from "../../imges/signup-login.png";
 import { useAuth0 } from "../../react-auth0-spa";
-import { getProfile, setProfile } from "../../usecases/user-api.usecase";
-//import { colors } from "@material-ui/core";
+// import {useFetchIt, fetchIt} from "../../utils/useFetchIt";
+// import { getProfile, setProfile } from "../../usecases/user-api.usecase";
 
-//const [apiMessage, setApiMessage] = useState({});
-
-// Setup Context and Initialize
-export const ProfileContext = React.createContext({
+const initialContext = {
+  loading: true,
   exists: false,
+  errorState: {},
+  avatar: null,
   nickName: "",
   email: "",
   onBoarded: Date.now,
-  errorState: {},
-});
+};
+
+// Setup Context and Initialize
+export const ProfileContext = React.createContext(initialContext);
 
 // Create Provider
 export const ProfileProvider = (props) => {
+  const { getTokenSilently, user } = useAuth0();
   const profileContext = useContext(ProfileContext);
+  const [initializing, setInitializing] = useState(true);
+
+  // internal states
+  const [loading, setLoading] = useState(profileContext.loading);
   const [exists, setExists] = useState(profileContext.exists);
+  const [errorState, setErrorState] = useState(profileContext.errorState);
+
+  // Auth0 profile state
+  const [avatar, setAvatar] = useState(profileContext.avatar);
+
+  // App DB profile state
   const [nickName, setNickName] = useState(profileContext.nickName);
   const [email, setEmail] = useState(profileContext.email);
   const [onBoarded, setOnboarded] = useState(profileContext.onBoarded);
-  const [errorState, setErrorState] = useState(profileContext.errorState);
 
-  const [allowOnce, setAllowOnce] = useState(true);
-  
-  const { getTokenSilently } = useAuth0();
-
-  const updateContext= (profile) => {
-    setEmail(profile.success ? profile.res.email : "");
-    setNickName(profile.success ? profile.res.nickName : "");
-    setOnboarded(profile.success ? profile.res.onBoarded : Date.now);
-    setExists(profile.success ? profile.res.exists : false);
-    setErrorState(profile.error ? profile.error : {});
-  }
-
-  const readProfile = async () => {
-    setAllowOnce(false);
-    const token = await getTokenSilently();
-    const reply = await getProfile(token);
-    updateContext(reply);
+  const createProfileContext = async (retrieveProfile, params) => {
+    setLoading(true);
+    let profile = {};
+    try {
+      const token = await getTokenSilently();
+      //console.log(params)
+      profile = await retrieveProfile({ token: token, ...params });
+      setExists(profile.exists ? profile.exists : initialContext.exists);
+      setErrorState(profile.error ? profile.error : initialContext.errorState);
+      setAvatar(profile.avatar ? profile.avatar : user.picture);
+      setNickName(
+        profile.nickName ? profile.nickName : initialContext.nickName
+      );
+      setEmail(profile.email ? profile.email : initialContext.email);
+      setOnboarded(
+        profile.onBoarded ? profile.onBoarded : initialContext.onBoarded
+      );
+    } catch (e) {
+      profile = { error: JSON.stringify(e.message, null, 2) };
+      setErrorState(profile);
+    }
+    setLoading(false);
   };
 
-  const writeProfile = async (profile) => {
-      setAllowOnce(false);
-      const token = await getTokenSilently();
-      const reply = await setProfile(token, profile);
-      updateContext(reply);
-    };
-
-  if (allowOnce) {
-    readProfile();
+  if (initializing) {
+    createProfileContext(getProfile, {});
+    setInitializing(false);
   }
 
   const provider = {
+    loading,
     exists,
+    errorState,
+    avatar,
     nickName,
     email,
     onBoarded,
-    errorState,
-    setFetchProfile: () => {
-      setAllowOnce(true);
-      readProfile();
-    },
-    setUpdateProfile: (email, nickName) => {
-        setAllowOnce(true);
-        writeProfile({email: email, nickName: nickName});
+    setProfile: async (retrievProfile, params) => {
+      createProfileContext(retrievProfile, params);
     },
   };
 

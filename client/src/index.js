@@ -6,6 +6,10 @@ import App from "./App";
 import config from "./auth_config.json";
 import history from "./utils/history";
 import "typeface-roboto";
+//import { createErrorPrototype } from "./utils/json.utils";
+
+// Adding to error prototype to improve json stringify
+//createErrorPrototype();
 
 // A function that routes the user to the right place
 // after login
@@ -44,8 +48,3 @@ let initState = {
 };
 
 window.setState(initState);
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-//serviceWorker.unregister();

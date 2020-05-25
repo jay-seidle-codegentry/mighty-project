@@ -22,17 +22,70 @@ So, I've done some debating... I am going to start with an app that does 'envelo
     * fund envelopes
     * manage transactions to envelopes
 
-## Requires Adding A File to Build and Run
-In *root*/client, create a file '**auth_config.json**'
+## What's Working
+### Server
+1. Backend Profile Service - is stubbed out. The GET returns 'user not found' json object and the POST updates it.  It is not storing the info.  **NOTE**: to get back to 'user not found', restart the server
 
-Add the following lines, update with your Auth0 information and save (only add audience once you create your Auth0 API)
+### Client
+1. Landing Page
+1. Login / Register using Auth0
+1. Language Support (english and spanish)
+1. Hamburger main menu - partially wired up
+1. Profile Photo menu - partially wired up
+1. View Profile
+1. Edit Profile
+1. Post login, if new user is detected, it takes you to Edit Profile
+1. Prototype of Home View - not wired up
+
+## Setup Client
+### Configure Client API
+    In *root*/client, create a file '**.env.development**'
+
+    Add the following lines
+    REACT_APP_API_PORT=3001
+    REACT_APP_API_ORIGIN=http://localhost
+
+### Configure Client Auth0 
+    In *root*/client, create a file '**auth_config.json**'
+
+    Add the following lines, update with your Auth0 information and save (only add audience once you create your Auth0 API)
 ```json
 {
     "domain": "your-app-domain.auth0.com",
     "clientId": "your-client-id",
-    "audience": "your-api-identifier"
+    "audience": "http://your-api-identifier"
 }
 ```
+
+## Setup Server
+### Configure Server Port
+    In *root*/server, create a file '**.env**'
+
+    Add the following line
+    APP_PORT=3001
+
+### Configure Server Cors to Accept Calls From Client App
+    In *root*/server, add lines to '**.env**' file
+
+    APP_ORIGIN_PORT=3000
+    APP_ORIGIN=http://localhost
+
+### Configure Server to Parse Auth0 Token
+    In *root*/server, add lines to '**.env**' file
+
+    AUTH0_DOMAIN=your-app-domain.auth0.com
+    AUTH0_CLIENT_ID=your-client-id
+    AUTO0_AUDIENCE=http://your-api-identifier
+
+## To Run
+### Start Server
+    cd server
+    node server.js
+
+### Start Client
+    cd client
+    npm start
+
 # Helpful Sites for this project
 
 Multi-Lingual Support
@@ -72,9 +125,15 @@ https://www.polvara.me/posts/mocking-context-with-react-testing-library/
 https://github.com/testing-library/jest-dom#tohavetextcontent 
 https://medium.com/@rishabhsrao/mocking-and-testing-fetch-with-jest-c4d670e2e167
 
+Provide Delayed Resolve for Tests
+https://www.geeksforgeeks.org/how-to-wait-for-a-promise-to-finish-before-returning-the-variable-of-a-function/
+
 Testing with click and wait
 https://www.youtube.com/watch?time_continue=42&v=SSyy2sHpmIA&feature=emb_logo
 
 Testing Async API with Hooks OMG
 https://testing-library.com/docs/dom-testing-library/api-async
 https://github.com/testing-library/react-testing-library/issues/441#issuecomment-520977388 
+
+Fixing Issues with Exceptions and JSON Stringify
+https://stackoverflow.com/questions/18391212/is-it-not-possible-to-stringify-an-error-using-json-stringify
