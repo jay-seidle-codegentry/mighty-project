@@ -9,6 +9,7 @@ import { Grid } from "@material-ui/core";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import SettingsIcon from "@material-ui/icons/Settings";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { SummationPanel } from "../../Components/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,6 +29,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const things = [
+  { name: "Checking111", amount: "1325.22" },
+  { name: "Checking222", amount: "-995.22" },
+];
+
 export default function TrialEnvelopes() {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
@@ -42,6 +48,7 @@ export default function TrialEnvelopes() {
         expanded={expanded === "panel1"}
         onChange={handleChange("panel1")}
       >
+        <SummationPanel id="panel999" title="Whoa Thingy" detail={things} />
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1bh-content"
@@ -80,7 +87,7 @@ export default function TrialEnvelopes() {
               </Grid>
             </Grid>
             <Grid container>
-              <Grid style={{marginLeft:"auto"}} item>
+              <Grid style={{ marginLeft: "auto" }} item>
                 <SettingsIcon style={{ paddingRight: "10px" }} />
                 <DeleteIcon />
               </Grid>
@@ -143,7 +150,7 @@ export default function TrialEnvelopes() {
               </Grid>
             </Grid>
             <Grid container>
-              <Grid style={{marginLeft:"auto"}} item>
+              <Grid style={{ marginLeft: "auto" }} item>
                 <SettingsIcon style={{ paddingRight: "10px" }} />
                 <DeleteIcon />
               </Grid>
@@ -210,7 +217,7 @@ export default function TrialEnvelopes() {
               </Grid>
             </Grid>
             <Grid container>
-              <Grid style={{marginLeft:"auto"}} item>
+              <Grid style={{ marginLeft: "auto" }} item>
                 <SettingsIcon style={{ paddingRight: "10px" }} />
                 <DeleteIcon />
               </Grid>
@@ -273,7 +280,7 @@ export default function TrialEnvelopes() {
               </Grid>
             </Grid>
             <Grid container>
-              <Grid style={{marginLeft:"auto"}} item>
+              <Grid style={{ marginLeft: "auto" }} item>
                 <SettingsIcon style={{ paddingRight: "10px" }} />
                 <DeleteIcon />
               </Grid>

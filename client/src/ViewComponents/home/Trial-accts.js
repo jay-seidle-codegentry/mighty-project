@@ -7,9 +7,8 @@ import Typography from "@material-ui/core/Typography";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import { Grid } from "@material-ui/core";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import SettingsIcon from "@material-ui/icons/Settings";
-import DeleteIcon from "@material-ui/icons/Delete";
-import CurrencyAmount from "../../Components/core";
+import { IconButton } from "@material-ui/core";
+import { CurrencyAmount, SummationPanel, RemoveChangeIconGroup } from "../../Components/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,17 +27,49 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+function change(event) {
+  alert(event + " button clicked");
+}
+
+function remove(event) {
+  alert(event + " button clicked");
+}
+
+function showTransactions(event) {
+  alert(event + " show transactions clicked");
+}
+
+function bump(event) {
+  event.stopPropagation();
+  alert(event.target.innerHTML);
+}
+
 export default function TrialAccounts() {
   const classes = useStyles();
+  //const leftButton = clsx(classes.settingsButton, classes.buttons);
   const [expanded, setExpanded] = React.useState(false);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
+  const things = [
+    { name: "Checking111", amount: "1325.22" },
+    { name: "Checking222", amount: "-995.22" },
+  ];
+
   return (
     <div className={classes.root}>
-      <ExpansionPanel
+       <SummationPanel
+        id="panel999"
+        title="Whoa Thingy"
+        detail={things}
+        hideDetail={true}
+        transactionHandler={showTransactions}
+        changeHandler={change}
+        removeHandler={remove}
+      />
+     <ExpansionPanel
         expanded={expanded === "panel1"}
         onChange={handleChange("panel1")}
       >
@@ -59,7 +90,14 @@ export default function TrialAccounts() {
               </Typography>
             </Grid>
             <Grid item xs={1}>
-              <MoreHorizIcon />
+              <IconButton
+                style={{ padding: "unset" }}
+                disableFocusRipple={true}
+                disableRipple={true}
+                onClick={bump}
+              >
+                <MoreHorizIcon />
+              </IconButton>
             </Grid>
           </Grid>
         </ExpansionPanelSummary>
@@ -68,12 +106,7 @@ export default function TrialAccounts() {
             style={{ marginTop: "-30px", width: "100%" }}
             component="div"
           >
-            <Grid container>
-              <Grid style={{ marginLeft: "auto" }} item>
-                <SettingsIcon style={{ paddingRight: "10px" }} />
-                <DeleteIcon />
-              </Grid>
-            </Grid>
+            <RemoveChangeIconGroup id="panel1" changeHandler={change} removeHandler={remove} />
           </Typography>
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -107,12 +140,7 @@ export default function TrialAccounts() {
             style={{ marginTop: "-30px", width: "100%" }}
             component="div"
           >
-            <Grid container>
-              <Grid style={{ marginLeft: "auto" }} item>
-                <SettingsIcon style={{ paddingRight: "10px" }} />
-                <DeleteIcon />
-              </Grid>
-            </Grid>
+            <RemoveChangeIconGroup id="panel2" changeHandler={change} removeHandler={remove} />
           </Typography>
         </ExpansionPanelDetails>
       </ExpansionPanel>
@@ -146,12 +174,7 @@ export default function TrialAccounts() {
             style={{ marginTop: "-30px", width: "100%" }}
             component="div"
           >
-            <Grid container>
-              <Grid style={{ marginLeft: "auto" }} item>
-                <SettingsIcon style={{ paddingRight: "10px" }} />
-                <DeleteIcon />
-              </Grid>
-            </Grid>
+            <RemoveChangeIconGroup id="panel3" changeHandler={change} removeHandler={remove} />
           </Typography>
         </ExpansionPanelDetails>
       </ExpansionPanel>
