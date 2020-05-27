@@ -1,5 +1,5 @@
 import React from "react";
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
 import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
@@ -9,7 +9,7 @@ import DraftsIcon from "@material-ui/icons/Drafts";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
 import TrialItems from "./TrialItems";
 import AddIcon from "@material-ui/icons/Add";
-import { Grid } from "@material-ui/core";
+import { Grid, IconButton } from "@material-ui/core";
 import TrialEnvelopes from "./Trial-envs";
 import TrialAccounts from "./Trial-accts";
 
@@ -55,13 +55,26 @@ const ExpansionPanelDetails = withStyles((theme) => ({
   },
 }))(MuiExpansionPanelDetails);
 
-const styles = {
+const useStyles = makeStyles((theme) => ({
+  top: {
+    width: "100%",
+  },
   floatIcon: {
     paddingTop: "6px",
   },
-};
+  title: {
+    fontSize: "2rem",
+  },
+  action: {
+    padding: "6px",
+  },
+  buttons: {
+    padding: "unset",
+  },
+}));
 
 export const Trial = (props) => {
+  const classes = useStyles();
   const [expanded, setExpanded] = React.useState("panel1");
 
   const handleChange = (panel) => (event, newExpanded) => {
@@ -79,12 +92,15 @@ export const Trial = (props) => {
           aria-controls="panel1d-content"
           id="panel1d-header"
         >
-          <Typography style={{ width: "100%" }} component="div">
+          <Typography className={classes.top} component="div">
             <Grid container>
               <Grid item sm={1} xs={2}>
-                <MoveToInboxIcon style={styles.floatIcon} fontSize="large" />
+                <MoveToInboxIcon
+                  className={classes.floatIcon}
+                  fontSize="large"
+                />
               </Grid>
-              <Grid style={{ fontSize: "2rem" }} item xs={9} sm={10}>
+              <Grid className={classes.title} item xs={9} sm={10}>
                 Inbox
               </Grid>
             </Grid>
@@ -103,16 +119,22 @@ export const Trial = (props) => {
           aria-controls="panel2d-content"
           id="panel2d-header"
         >
-          <Typography style={{ width: "100%" }} component="div">
+          <Typography className={classes.top} component="div">
             <Grid container>
               <Grid item sm={1} xs={2}>
-                <DraftsIcon style={styles.floatIcon} fontSize="large" />
+                <DraftsIcon className={classes.floatIcon} fontSize="large" />
               </Grid>
-              <Grid style={{ fontSize: "2rem" }} item xs={8} sm={10}>
+              <Grid className={classes.title} item xs={8} sm={10}>
                 Envelopes
               </Grid>
               <Grid item container xs={1}>
-                <AddIcon style={{ padding: "6px" }} fontSize="large" />
+                <IconButton
+                  className={classes.buttons}
+                  disableFocusRipple={true}
+                  disableRipple={true}
+                >
+                  <AddIcon className={classes.action} fontSize="large" />
+                </IconButton>
               </Grid>
             </Grid>
           </Typography>
@@ -130,22 +152,31 @@ export const Trial = (props) => {
           aria-controls="panel3d-content"
           id="panel3d-header"
         >
-          <Typography style={{ width: "100%" }} component="div">
+          <Typography className={classes.top} component="div">
             <Grid container>
               <Grid item sm={1} xs={2}>
-                <AccountBalanceIcon fontSize="large" style={styles.floatIcon} />{" "}
+                <AccountBalanceIcon
+                  fontSize="large"
+                  className={classes.floatIcon}
+                />{" "}
               </Grid>
-              <Grid style={{ fontSize: "2rem" }} item xs={8} sm={10}>
+              <Grid className={classes.title} item xs={8} sm={10}>
                 Accounts
               </Grid>
               <Grid item container xs={1}>
-                <AddIcon style={{ padding: "6px" }} fontSize="large" />
+                <IconButton
+                  className={classes.buttons}
+                  disableFocusRipple={true}
+                  disableRipple={true}
+                >
+                  <AddIcon className={classes.action} fontSize="large" />
+                </IconButton>
               </Grid>
             </Grid>
           </Typography>
         </ExpansionPanelSummary>
         <ExpansionPanelDetails>
-            <TrialAccounts />
+          <TrialAccounts />
         </ExpansionPanelDetails>
       </ExpansionPanel>
     </div>
