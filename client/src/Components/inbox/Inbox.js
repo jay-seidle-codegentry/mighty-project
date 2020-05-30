@@ -1,7 +1,8 @@
 import React, { useContext, useState } from "react";
 import Typography from "@material-ui/core/Typography";
-import { Grid } from "@material-ui/core";
+import { Grid, IconButton } from "@material-ui/core";
 import MoveToInboxIcon from "@material-ui/icons/MoveToInbox";
+import PublishIcon from "@material-ui/icons/Publish";
 import InboxCard from "./InboxCard";
 import { LanguageContext } from "../../Components/locale/LanguageProvider";
 import {
@@ -67,8 +68,17 @@ export const Inbox = (props) => {
             <Grid item sm={1} xs={2}>
               <MoveToInboxIcon className={classes.floatIcon} fontSize="large" />
             </Grid>
-            <Grid className={classes.title} item xs={9} sm={10}>
+            <Grid className={classes.title} item xs={8} sm={10}>
               {T.Panels.Inbox}
+            </Grid>
+            <Grid item container xs={1}>
+              <IconButton
+                className={classes.buttons}
+                disableFocusRipple={true}
+                disableRipple={true}
+              >
+                <PublishIcon className={classes.action} fontSize="large" />
+              </IconButton>
             </Grid>
           </Grid>
         </Typography>
