@@ -13,8 +13,9 @@ const initialContext = {
   avatar: null,
   nickName: "",
   email: "",
-  onBoarded: Date.now,
   accounts: [],
+  envelopes: [],
+  onBoarded: Date.now,
 };
 
 // Setup Context and Initialize
@@ -39,6 +40,7 @@ export const ProfileProvider = (props) => {
   const [email, setEmail] = useState(profileContext.email);
   const [onBoarded, setOnboarded] = useState(profileContext.onBoarded);
   const [accounts, setAccounts] = useState(profileContext.accounts);
+  const [envelopes, setEnvelopes] = useState(profileContext.envelopes);
 
   const createProfileContext = async (retrieveProfile, params) => {
     setLoading(true);
@@ -54,10 +56,11 @@ export const ProfileProvider = (props) => {
         profile.nickName ? profile.nickName : initialContext.nickName
       );
       setEmail(profile.email ? profile.email : initialContext.email);
+      setAccounts(profile.accounts ? profile.accounts : []);
+      setEnvelopes(profile.envelopes ? profile.envelopes : []);
       setOnboarded(
         profile.onBoarded ? profile.onBoarded : initialContext.onBoarded
       );
-      setAccounts(profile.accounts ? profile.accounts : []);
     } catch (e) {
       profile = { error: JSON.stringify(e.message, null, 2) };
       setErrorState(profile);
@@ -79,6 +82,7 @@ export const ProfileProvider = (props) => {
     email,
     onBoarded,
     accounts,
+    envelopes,
     setProfile: async (retrievProfile, params) => {
       createProfileContext(retrievProfile, params);
     },

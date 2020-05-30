@@ -2,27 +2,14 @@ import React, { useContext, useState } from "react";
 import Loading from "../../Components/loading/Loading";
 import ErrorView from "../error/ErrorView";
 import { ProfileContext } from "../../Components/Profile/ProfileProvider";
-import { LanguageContext } from "../../Components/locale/LanguageProvider";
-import Typography from "@material-ui/core/Typography";
-import DraftsIcon from "@material-ui/icons/Drafts";
-import AddIcon from "@material-ui/icons/Add";
-import { Grid, IconButton } from "@material-ui/core";
-import TrialEnvelopes from "./Trial-envs";
-import {
-  ExpansionPanel,
-  ExpansionPanelSummary,
-  ExpansionPanelDetails,
-  useStyles,
-} from "../../Components/core/ExpansionPanels";
 import Inbox from "../../Components/inbox/Inbox";
 import Accounts from "../../Components/accounts/Accounts";
+import Envelopes from "../../Components/envelopes/Envelopes";
 
 export const Home = (props) => {
   const profileContext = useContext(ProfileContext);
-  const T = useContext(LanguageContext).dictionary;
   const { loading, errorState } = profileContext;
   const [expanded, setExpanded] = useState("inbox");
-  const classes = useStyles();
 
   const handleChange = (panel) => (event, newExpanded) => {
     setExpanded(newExpanded ? panel : false);
@@ -37,39 +24,7 @@ export const Home = (props) => {
   return (
     <>
       <Inbox expanded={expanded === "inbox"} onChange={handleChange("inbox")} />
-      <ExpansionPanel
-        square
-        expanded={expanded === "envelopes"}
-        onChange={handleChange("envelopes")}
-      >
-        <ExpansionPanelSummary
-          aria-controls="envelopes-content"
-          id="envelopes-header"
-        >
-          <Typography className={classes.top} component="div">
-            <Grid container>
-              <Grid item sm={1} xs={2}>
-                <DraftsIcon className={classes.floatIcon} fontSize="large" />
-              </Grid>
-              <Grid className={classes.title} item xs={8} sm={10}>
-                {T.Panels.Envelopes}
-              </Grid>
-              <Grid item container xs={1}>
-                <IconButton
-                  className={classes.buttons}
-                  disableFocusRipple={true}
-                  disableRipple={true}
-                >
-                  <AddIcon className={classes.action} fontSize="large" />
-                </IconButton>
-              </Grid>
-            </Grid>
-          </Typography>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <TrialEnvelopes />
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+      <Envelopes expanded={expanded === "envelopes"} onChange={handleChange("envelopes")} />
       <Accounts expanded={expanded === "accounts"} onChange={handleChange("accounts")} />
     </>
   );
