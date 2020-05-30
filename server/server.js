@@ -19,6 +19,27 @@ let user = {
   email: "john.doe@doa.uri",
   onBoarded: Date.now,
   responseState: {},
+  accounts: [
+    {
+      title: "Whoa Thingy",
+      detail: [
+        { name: "Checking111", amount: "1325.22" },
+        { name: "Checking222", amount: "-995.22" },
+      ],
+    },
+    {
+      title: "Checking Account",
+      detail: [{ name: "Main Checking", amount: "13807.53" }],
+    },
+    {
+      title: "Savings Account",
+      detail: [{ name: "Main Savings", amount: "1201.79" }],
+    },
+    {
+      title: "Chase Card",
+      detail: [{ name: "Chase Credit Card", amount: "-978.09" }],
+    },
+  ],  
 };
 
 app.get("/api/profile", checkJwt, (req, res) => {

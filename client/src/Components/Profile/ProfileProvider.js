@@ -14,6 +14,7 @@ const initialContext = {
   nickName: "",
   email: "",
   onBoarded: Date.now,
+  accounts: [],
 };
 
 // Setup Context and Initialize
@@ -37,6 +38,7 @@ export const ProfileProvider = (props) => {
   const [nickName, setNickName] = useState(profileContext.nickName);
   const [email, setEmail] = useState(profileContext.email);
   const [onBoarded, setOnboarded] = useState(profileContext.onBoarded);
+  const [accounts, setAccounts] = useState(profileContext.accounts);
 
   const createProfileContext = async (retrieveProfile, params) => {
     setLoading(true);
@@ -55,6 +57,7 @@ export const ProfileProvider = (props) => {
       setOnboarded(
         profile.onBoarded ? profile.onBoarded : initialContext.onBoarded
       );
+      setAccounts(profile.accounts ? profile.accounts : []);
     } catch (e) {
       profile = { error: JSON.stringify(e.message, null, 2) };
       setErrorState(profile);
@@ -75,6 +78,7 @@ export const ProfileProvider = (props) => {
     nickName,
     email,
     onBoarded,
+    accounts,
     setProfile: async (retrievProfile, params) => {
       createProfileContext(retrievProfile, params);
     },
