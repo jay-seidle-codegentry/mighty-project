@@ -46,6 +46,11 @@ const en = {
       DateLabel: "Sign-up Date:",
     },
   },
+  Panels: {
+    Inbox: "Inbox",
+    Envelopes: "Envelopes",
+    Accounts: "Accounts",
+  },
   LoadingMessage: "Loading that up for you right now! Just a sec...",
 };
 

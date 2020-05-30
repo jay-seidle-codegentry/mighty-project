@@ -1,14 +1,5 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import Typography from "@material-ui/core/Typography";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { Grid } from "@material-ui/core";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import SettingsIcon from "@material-ui/icons/Settings";
-import DeleteIcon from "@material-ui/icons/Delete";
 import { SummationPanel } from "../../Components/core";
 
 const useStyles = makeStyles((theme) => ({
@@ -29,11 +20,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const things = [
-  { name: "Checking111", amount: "1325.22" },
-  { name: "Checking222", amount: "-995.22" },
-];
-
 export default function TrialEnvelopes() {
   const classes = useStyles();
   const [expanded, setExpanded] = React.useState(false);
@@ -44,256 +30,53 @@ export default function TrialEnvelopes() {
 
   return (
     <div className={classes.root}>
-      <ExpansionPanel
+      <SummationPanel
+        expanded={expanded === "panel999"}
+        onChange={handleChange("panel999")}
+        id="panel999"
+        title="Whoa Thingy"
+        detail={[
+          { name: "Checking111", amount: "1325.22" },
+          { name: "Checking222", amount: "-995.22" },
+        ]}
+      />
+      <SummationPanel
         expanded={expanded === "panel1"}
         onChange={handleChange("panel1")}
-      >
-        <SummationPanel
-          expanded={expanded === "panel999"}
-          onChange={handleChange("panel999")}
-          id="panel999"
-          title="Whoa Thingy"
-          detail={things}
-        />
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
-        >
-          <Grid container>
-            <Grid item xs={5} sm={3}>
-              <Typography className={classes.heading}>$1,807.53</Typography>
-            </Grid>
-            <Grid item xs={5} sm={8}>
-              <Typography className={classes.secondaryHeading}>
-                Rent / Mortgage
-              </Typography>
-            </Grid>
-            <Grid item xs={1}>
-              <MoreHorizIcon />
-            </Grid>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography
-            style={{ marginTop: "-30px", width: "100%" }}
-            component="div"
-          >
-            <Grid container>
-              <Grid item>
-                <Typography component="span" className={classes.heading}>
-                  $1,807.53
-                </Typography>
-                <Typography
-                  component="span"
-                  className={classes.secondaryHeading}
-                >
-                  Checking Account
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid style={{ marginLeft: "auto" }} item>
-                <SettingsIcon style={{ paddingRight: "10px" }} />
-                <DeleteIcon />
-              </Grid>
-            </Grid>
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel
+        id="panel1"
+        title="Rent / Mortgage"
+        detail={[{ name: "Checking", amount: "1807.53" }]}
+      />
+      <SummationPanel
         expanded={expanded === "panel2"}
         onChange={handleChange("panel2")}
-      >
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2bh-content"
-          id="panel2bh-header"
-        >
-          <Grid container>
-            <Grid item xs={5} sm={3}>
-              <Typography className={classes.heading}>$201.79</Typography>
-            </Grid>
-            <Grid item xs={5} sm={8}>
-              <Typography className={classes.secondaryHeading}>
-                Utilities
-              </Typography>
-            </Grid>
-            <Grid item xs={1}>
-              <MoreHorizIcon />
-            </Grid>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography
-            style={{ marginTop: "-30px", width: "100%" }}
-            component="div"
-          >
-            <Grid container>
-              <Grid item>
-                <Typography component="span" className={classes.heading}>
-                  $100.79
-                </Typography>
-                <Typography
-                  component="span"
-                  className={classes.secondaryHeading}
-                >
-                  Checking Account
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid item>
-                <Typography component="span" className={classes.heading}>
-                  $101.00
-                </Typography>
-                <Typography
-                  component="span"
-                  className={classes.secondaryHeading}
-                >
-                  Savings Account
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid style={{ marginLeft: "auto" }} item>
-                <SettingsIcon style={{ paddingRight: "10px" }} />
-                <DeleteIcon />
-              </Grid>
-            </Grid>
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel
+        id="panel2"
+        title="Utilities"
+        detail={[
+          { name: "Checking", amount: "100.79" },
+          { name: "Savings", amount: "101.00" },
+        ]}
+      />
+      <SummationPanel
         expanded={expanded === "panel3"}
         onChange={handleChange("panel3")}
-      >
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel3bh-content"
-          id="panel3bh-header"
-        >
-          <Grid container>
-            <Grid item xs={5} sm={3}>
-              <Typography className={classes.heading}>$78.09</Typography>
-            </Grid>
-            <Grid item xs={5} sm={8}>
-              <Typography className={classes.secondaryHeading}>
-                Movies
-              </Typography>
-            </Grid>
-            <Grid item xs={1}>
-              <MoreHorizIcon />
-            </Grid>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography
-            style={{ marginTop: "-30px", width: "100%" }}
-            component="div"
-          >
-            <Grid container>
-              <Grid item>
-                <Typography
-                  style={{ color: "red" }}
-                  component="span"
-                  className={classes.heading}
-                >
-                  $21.91
-                </Typography>
-                <Typography
-                  component="span"
-                  className={classes.secondaryHeading}
-                >
-                  Checking Account
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid item>
-                <Typography component="span" className={classes.heading}>
-                  $100.00
-                </Typography>
-                <Typography
-                  component="span"
-                  className={classes.secondaryHeading}
-                >
-                  Savings Account
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid style={{ marginLeft: "auto" }} item>
-                <SettingsIcon style={{ paddingRight: "10px" }} />
-                <DeleteIcon />
-              </Grid>
-            </Grid>
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel
+        id="panel3"
+        title="Movies"
+        detail={[
+          { name: "Checking", amount: "22.91" },
+          { name: "Savings", amount: "100.00" },
+        ]}
+      />
+      <SummationPanel
         expanded={expanded === "panel4"}
         onChange={handleChange("panel4")}
-      >
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel4bh-content"
-          id="panel4bh-header"
-        >
-          <Grid container>
-            <Grid item xs={5} sm={3}>
-              <Typography className={classes.heading}>$900,099.99</Typography>
-            </Grid>
-            <Grid item xs={5} sm={8}>
-              <Typography className={classes.secondaryHeading}>
-                Savings
-              </Typography>
-            </Grid>
-            <Grid item xs={1}>
-              <MoreHorizIcon />
-            </Grid>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography
-            style={{ marginTop: "-30px", width: "100%" }}
-            component="div"
-          >
-            <Grid container>
-              <Grid item>
-                <Typography component="span" className={classes.heading}>
-                  $99.99
-                </Typography>
-                <Typography
-                  component="span"
-                  className={classes.secondaryHeading}
-                >
-                  Checking Account
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid item>
-                <Typography component="span" className={classes.heading}>
-                  $900,000.00
-                </Typography>
-                <Typography
-                  component="span"
-                  className={classes.secondaryHeading}
-                >
-                  Savings Account
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container>
-              <Grid style={{ marginLeft: "auto" }} item>
-                <SettingsIcon style={{ paddingRight: "10px" }} />
-                <DeleteIcon />
-              </Grid>
-            </Grid>
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        id="panel4"
+        title="Savings"
+        detail={[
+          { name: "Checking", amount: "99.99" },
+          { name: "Savings", amount: "900000.00" },
+        ]}
+      />
     </div>
   );
 }

@@ -28,6 +28,10 @@ const useStyles = makeStyles((theme) => ({
   transactionButton: {
     padding: "unset",
   },
+  transactions: {
+    marginTop: "-30px",
+    width: "100%",
+  },
 }));
 
 export const SummationPanel = (props) => {
@@ -41,6 +45,8 @@ export const SummationPanel = (props) => {
     transactionHandler,
     changeHandler,
     removeHandler,
+    expanded,
+    onChange,
   } = props;
 
   const RenderDetail = (details, hideDetails) => {
@@ -76,7 +82,7 @@ export const SummationPanel = (props) => {
   const { sum, items } = RenderDetail(detail, hideDetail);
 
   const triggerTransactions = (event) => {
-      event.stopPropagation();
+    event.stopPropagation();
     const transId = id + "_Transactions";
     if (transactionHandler) transactionHandler(transId);
   };
@@ -85,10 +91,7 @@ export const SummationPanel = (props) => {
   const idHeader = id + "bh-header";
 
   return (
-    <ExpansionPanel
-    expanded={props.expanded}
-    onChange={props.onChange}
-    >
+    <ExpansionPanel expanded={expanded} onChange={onChange}>
       <ExpansionPanelSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls={ariaControls}
@@ -106,17 +109,17 @@ export const SummationPanel = (props) => {
             </Typography>
           </Grid>
           <Grid item xs={1}>
-            <IconButton className={classes.transactionButton} onClick={triggerTransactions}>
+            <IconButton
+              className={classes.transactionButton}
+              onClick={triggerTransactions}
+            >
               <MoreHorizIcon />
             </IconButton>
           </Grid>
         </Grid>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
-        <Typography
-          style={{ marginTop: "-30px", width: "100%" }}
-          component="div"
-        >
+        <Typography className={classes.transactions} component="div">
           {items}
           <RemoveChangeIconGroup
             id={id}

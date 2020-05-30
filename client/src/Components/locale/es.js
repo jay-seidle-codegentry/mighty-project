@@ -46,6 +46,11 @@ const es = {
       DateLabel: "Fecha de registro:",
     },
   },
+  Panels: {
+    Inbox: "Bandeja de entrada",
+    Envelopes: "Sobres",
+    Accounts: "Cuentas",
+  },
   LoadingMessage: "¡Cargando eso para ti ahora mismo! Sólo un segundo...",
 };
 

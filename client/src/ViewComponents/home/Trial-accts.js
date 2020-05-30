@@ -1,14 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import ExpansionPanel from "@material-ui/core/ExpansionPanel";
-import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
-import Typography from "@material-ui/core/Typography";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { Grid } from "@material-ui/core";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import { IconButton } from "@material-ui/core";
-import { CurrencyAmount, SummationPanel, RemoveChangeIconGroup } from "../../Components/core";
+import { SummationPanel } from "../../Components/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,11 +31,6 @@ function showTransactions(event) {
   alert(event + " show transactions clicked");
 }
 
-function bump(event) {
-  event.stopPropagation();
-  alert(event.target.innerHTML);
-}
-
 export default function TrialAccounts() {
   const classes = useStyles();
   //const leftButton = clsx(classes.settingsButton, classes.buttons);
@@ -53,133 +40,55 @@ export default function TrialAccounts() {
     setExpanded(isExpanded ? panel : false);
   };
 
-  const things = [
-    { name: "Checking111", amount: "1325.22" },
-    { name: "Checking222", amount: "-995.22" },
-  ];
-
   return (
     <div className={classes.root}>
-       <SummationPanel
+      <SummationPanel
         expanded={expanded === "panel999"}
         onChange={handleChange("panel999")}
         id="panel999"
         title="Whoa Thingy"
-        detail={things}
+        detail={[
+          { name: "Checking111", amount: "1325.22" },
+          { name: "Checking222", amount: "-995.22" },
+        ]}
         hideDetail={true}
         transactionHandler={showTransactions}
         changeHandler={change}
         removeHandler={remove}
       />
-     <ExpansionPanel
+      <SummationPanel
         expanded={expanded === "panel1"}
         onChange={handleChange("panel1")}
-      >
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
-        >
-          <Grid container>
-            <Grid item xs={5} sm={3}>
-              <Typography className={classes.heading}>
-                <CurrencyAmount amount="13807.53" />
-              </Typography>
-            </Grid>
-            <Grid item xs={5} sm={8}>
-              <Typography className={classes.secondaryHeading}>
-                Checking Account
-              </Typography>
-            </Grid>
-            <Grid item xs={1}>
-              <IconButton
-                style={{ padding: "unset" }}
-                disableFocusRipple={true}
-                disableRipple={true}
-                onClick={bump}
-              >
-                <MoreHorizIcon />
-              </IconButton>
-            </Grid>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography
-            style={{ marginTop: "-30px", width: "100%" }}
-            component="div"
-          >
-            <RemoveChangeIconGroup id="panel1" changeHandler={change} removeHandler={remove} />
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel
+        id="panel1"
+        title="Checking Account"
+        detail={[{ name: "Main Checking", amount: "13807.53" }]}
+        hideDetail={true}
+        transactionHandler={showTransactions}
+        changeHandler={change}
+        removeHandler={remove}
+      />
+      <SummationPanel
         expanded={expanded === "panel2"}
         onChange={handleChange("panel2")}
-      >
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel2bh-content"
-          id="panel2bh-header"
-        >
-          <Grid container>
-            <Grid item xs={5} sm={3}>
-              <Typography className={classes.heading}>
-                <CurrencyAmount amount="1201.79" />
-              </Typography>
-            </Grid>
-            <Grid item xs={5} sm={8}>
-              <Typography className={classes.secondaryHeading}>
-                Savings Account
-              </Typography>
-            </Grid>
-            <Grid item xs={1}>
-              <MoreHorizIcon />
-            </Grid>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography
-            style={{ marginTop: "-30px", width: "100%" }}
-            component="div"
-          >
-            <RemoveChangeIconGroup id="panel2" changeHandler={change} removeHandler={remove} />
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
-      <ExpansionPanel
+        id="panel2"
+        title="Savings Account"
+        detail={[{ name: "Main Savings", amount: "1201.79" }]}
+        hideDetail={true}
+        transactionHandler={showTransactions}
+        changeHandler={change}
+        removeHandler={remove}
+      />
+      <SummationPanel
         expanded={expanded === "panel3"}
         onChange={handleChange("panel3")}
-      >
-        <ExpansionPanelSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel3bh-content"
-          id="panel3bh-header"
-        >
-          <Grid container>
-            <Grid item xs={5} sm={3}>
-              <Typography className={classes.heading}>
-                <CurrencyAmount amount="-978.09" />
-              </Typography>
-            </Grid>
-            <Grid item xs={5} sm={8}>
-              <Typography className={classes.secondaryHeading}>
-                Chase Card
-              </Typography>
-            </Grid>
-            <Grid item xs={1}>
-              <MoreHorizIcon />
-            </Grid>
-          </Grid>
-        </ExpansionPanelSummary>
-        <ExpansionPanelDetails>
-          <Typography
-            style={{ marginTop: "-30px", width: "100%" }}
-            component="div"
-          >
-            <RemoveChangeIconGroup id="panel3" changeHandler={change} removeHandler={remove} />
-          </Typography>
-        </ExpansionPanelDetails>
-      </ExpansionPanel>
+        id="panel3"
+        title="Chase Card"
+        detail={[{ name: "Chase Credit Card", amount: "-978.09" }]}
+        hideDetail={true}
+        transactionHandler={showTransactions}
+        changeHandler={change}
+        removeHandler={remove}
+      />
     </div>
   );
 }

@@ -1,19 +1,9 @@
-import React from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import MuiExpansionPanel from "@material-ui/core/ExpansionPanel";
 import MuiExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
 import MuiExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
-import Typography from "@material-ui/core/Typography";
-import MoveToInboxIcon from "@material-ui/icons/MoveToInbox";
-import DraftsIcon from "@material-ui/icons/Drafts";
-import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
-import TrialItems from "./TrialItems";
-import AddIcon from "@material-ui/icons/Add";
-import { Grid, IconButton } from "@material-ui/core";
-import TrialEnvelopes from "./Trial-envs";
-import TrialAccounts from "./Trial-accts";
 
-const ExpansionPanel = withStyles({
+export const ExpansionPanel = withStyles({
   root: {
     border: "1px solid rgba(0, 0, 0, .125)",
     boxShadow: "none",
@@ -30,7 +20,7 @@ const ExpansionPanel = withStyles({
   expanded: {},
 })(MuiExpansionPanel);
 
-const ExpansionPanelSummary = withStyles({
+export const ExpansionPanelSummary = withStyles({
   root: {
     backgroundColor: "rgba(0, 0, 0, .03)",
     borderBottom: "1px solid rgba(0, 0, 0, .125)",
@@ -49,13 +39,16 @@ const ExpansionPanelSummary = withStyles({
   expanded: {},
 })(MuiExpansionPanelSummary);
 
-const ExpansionPanelDetails = withStyles((theme) => ({
+export const ExpansionPanelDetails = withStyles((theme) => ({
   root: {
     padding: theme.spacing(2),
   },
 }))(MuiExpansionPanelDetails);
 
-const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
   top: {
     width: "100%",
   },
@@ -72,19 +65,3 @@ const useStyles = makeStyles((theme) => ({
     padding: "unset",
   },
 }));
-
-export const Trial = (props) => {
-  const classes = useStyles();
-  const [expanded, setExpanded] = React.useState("panel1");
-
-  const handleChange = (panel) => (event, newExpanded) => {
-    setExpanded(newExpanded ? panel : false);
-  };
-
-  return (
-    <div>
-    </div>
-  );
-};
-
-export default Trial;
