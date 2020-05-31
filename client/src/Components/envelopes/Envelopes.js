@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import { Grid, IconButton } from "@material-ui/core";
-import DraftsIcon from "@material-ui/icons/AccountBalance";
+import DraftsIcon from "@material-ui/icons/Drafts";
 import AddIcon from "@material-ui/icons/Add";
 import { LanguageContext } from "../../Components/locale/LanguageProvider";
 import { ProfileContext } from "../../Components/Profile/ProfileProvider";
