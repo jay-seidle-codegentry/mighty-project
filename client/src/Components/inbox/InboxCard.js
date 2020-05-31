@@ -45,7 +45,12 @@ export default function InboxCard(props) {
     type,
     assignHandler,
     dark,
+    id,
   } = props;
+
+  const onButtonClick = () => {
+    assignHandler(id);
+  };
 
   const classes = useStyles();
   const cardStyle = dark ? classes.dark : classes.light;
@@ -79,7 +84,7 @@ export default function InboxCard(props) {
           <Grid>{account}</Grid>
         </Grid>
         <Grid item xs={1}>
-          <IconButton className={classes.assignButton} onClick={assignHandler}>
+          <IconButton className={classes.assignButton} onClick={onButtonClick}>
             <PostAddIcon className={classes.icon} />
           </IconButton>
         </Grid>

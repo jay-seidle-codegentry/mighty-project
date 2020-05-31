@@ -5,6 +5,7 @@ import { ProfileContext } from "../../Components/Profile/ProfileProvider";
 import Inbox from "../../Components/inbox/Inbox";
 import Accounts from "../../Components/accounts/Accounts";
 import Envelopes from "../../Components/envelopes/Envelopes";
+import TransactionProvider from "../../Components/transaction/TransactionProvider";
 
 export const Home = (props) => {
   const profileContext = useContext(ProfileContext);
@@ -23,9 +24,20 @@ export const Home = (props) => {
 
   return (
     <>
-      <Inbox expanded={expanded === "inbox"} onChange={handleChange("inbox")} />
-      <Envelopes expanded={expanded === "envelopes"} onChange={handleChange("envelopes")} />
-      <Accounts expanded={expanded === "accounts"} onChange={handleChange("accounts")} />
+      <TransactionProvider type="inbox">
+        <Inbox
+          expanded={expanded === "inbox"}
+          onChange={handleChange("inbox")}
+        />
+      </TransactionProvider>
+      <Envelopes
+        expanded={expanded === "envelopes"}
+        onChange={handleChange("envelopes")}
+      />
+      <Accounts
+        expanded={expanded === "accounts"}
+        onChange={handleChange("accounts")}
+      />
     </>
   );
 };

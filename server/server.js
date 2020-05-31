@@ -97,6 +97,45 @@ app.post("/api/profile", checkJwt, (req, res) => {
   res.json(user);
 });
 
+app.get("/api/transactions", checkJwt, (req, res) => {
+  console.log(req.headers.page);
+
+  res.send({page: parseInt(req.headers.page) + 1});
+});
+
+app.get("/api/transactions/inbox/:pageId", checkJwt, (req, res) => {
+  let page = req.params.pageId ? parseInt(req.params.pageId) : 0;
+
+  res.send({
+    page: page,
+    more: false,
+    errorState: {},
+    transactions: [
+      {
+        amount: "-105.97",
+        date: "Mon, December 17",
+        description: "VERIZON ONLINE PMT",
+        account: "Checking",
+        type: "purchase",
+      },
+      {
+        amount: "10294.97",
+        date: "Mon, December 17",
+        description: "U-TRADE Direct Deposit",
+        account: "Checking",
+        type: "deposit",
+      },
+      {
+        amount: "-225.47",
+        date: "Mon, December 25",
+        description: "Joe's Meat Farm - Roast Beef",
+        account: "Checking",
+        type: "purchase",
+      },
+    ],
+  });
+});
+
 app.get("/api/external", checkJwt, (req, res) => {
   const data = parseJwt(req.headers.authorization);
 

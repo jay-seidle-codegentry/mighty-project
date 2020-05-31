@@ -1,9 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import Typography from "@material-ui/core/Typography";
 import { Grid, IconButton } from "@material-ui/core";
 import MoveToInboxIcon from "@material-ui/icons/MoveToInbox";
 import PublishIcon from "@material-ui/icons/Publish";
 import InboxCard from "./InboxCard";
+import { TransactionContext} from "../transaction/TransactionProvider";
 import { LanguageContext } from "../../Components/locale/LanguageProvider";
 import {
   ExpansionPanel,
@@ -13,41 +14,21 @@ import {
 } from "../core/ExpansionPanels";
 
 export const Inbox = (props) => {
-  const [transactions, setNewTransactions] = useState([
-    {
-      amount: "-105.97",
-      date: "Mon, December 17",
-      description: "VERIZON ONLINE PMT",
-      account: "Checking",
-      type: "purchase",
-      assignHandler: () => alert("whoa assign it"),
-    },
-    {
-      amount: "10294.97",
-      date: "Mon, December 17",
-      description: "U-TRADE Direct Deposit",
-      account: "Checking",
-      type: "purchase",
-      assignHandler: () => alert("whoa assign it"),
-    },
-    {
-      amount: "-105.97",
-      date: "Mon, December 17",
-      description: "VERIZON ONLINE PMT",
-      account: "Checking",
-      type: "deposit",
-      assignHandler: () => alert("whoa assign it"),
-    },
-  ]);
   const T = useContext(LanguageContext).dictionary;
+  const {transactions} = useContext(TransactionContext);
   const classes = useStyles();
 
   const { expanded, onChange } = props;
+
+  const assign = (event) => {
+      alert('assign transaction from ' + event);
+  };
 
   const buildInboxCard = (transaction, index) => {
     let showDark = !Boolean(index % 2);
     return (
       <InboxCard
+        id={"ic_" + index}
         key={index}
         amount={transaction.amount}
         date={transaction.date}
@@ -55,7 +36,7 @@ export const Inbox = (props) => {
         dark={showDark}
         account={transaction.account}
         type={transaction.type}
-        assignHandler={transaction.assignHandler}
+        assignHandler={assign}
       />
     );
   };

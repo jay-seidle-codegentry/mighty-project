@@ -13,7 +13,6 @@ export const fetchIt = async (url, token, body) => {
         headers: {
           Accept: "application/json",
           "Content-type": "application/json; charset=UTF-8",
-          //"Content-Type": "application/json",
           ...options.headers,
         },
         body: JSON.stringify(body),
