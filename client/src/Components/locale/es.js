@@ -51,6 +51,43 @@ const es = {
     Envelopes: "Sobres",
     Accounts: "Cuentas",
   },
+  Accounts: {
+    NoAccounts: "No tienes cuentas.",
+  },
+  Account: {
+    Editor: {
+      EditTitle: "Update Account",
+      NewTitle: "Add Account",
+      NameLabel: "Account Name",
+      StartingAmountLabel: "Starting Balance",
+      CancelLabel: "Cancel",
+      SaveLabel: "Save",
+      SavedMessage: "Account Saved!",
+      CanceledMessage: "Canceled.",
+    },
+  },
+  Dialogs: {
+    Dialoger: {
+      cancelButton: "Cancel",
+      saveButton: "Save",
+    },
+    RemoveAccount: {
+      Title: "Removing an Account!",
+      Body: [
+        "You will no longer be able to import for this account.",
+        "However, any existing transactions will still be there.",
+      ],
+      Question: "Do you want to remove {title}?",
+    },
+  },
+  RemoveEnvelop: {
+    Title: "Removing an Envelope!",
+    Body: [
+      "You will no longer be able to assign to this envelope.",
+      "However, any previous assignments will still be there.",
+    ],
+    Question: "Do you want to remove {title}?",
+  },
   LoadingMessage: "¡Cargando eso para ti ahora mismo! Sólo un segundo...",
 };
 

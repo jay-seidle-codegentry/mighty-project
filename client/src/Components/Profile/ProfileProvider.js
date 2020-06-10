@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { getProfile } from "../../usecases/user-api.usecase";
+import { getProfile } from "../../usecases/profile-api.usecase";
 //import ProfileImage from "../../imges/searchpng.com-deafult-profile-icon-transparent-png-free-download.png";
 //import ProfileImage from "../../imges/signup-login.png";
 import { useAuth0 } from "../../react-auth0-spa";
@@ -42,13 +42,13 @@ export const ProfileProvider = (props) => {
   const [accounts, setAccounts] = useState(profileContext.accounts);
   const [envelopes, setEnvelopes] = useState(profileContext.envelopes);
 
-  const createProfileContext = async (retrieveProfile, params) => {
+  const createProfileContext = async (profileUsecase, params) => {
     setLoading(true);
     let profile = {};
     try {
       const token = await getTokenSilently();
       //console.log(params)
-      profile = await retrieveProfile({ token: token, ...params });
+      profile = await profileUsecase({ token: token, ...params });
       setExists(profile.exists ? profile.exists : initialContext.exists);
       setErrorState(profile.error ? profile.error : initialContext.errorState);
       setAvatar(profile.avatar ? profile.avatar : user.picture);
@@ -83,8 +83,8 @@ export const ProfileProvider = (props) => {
     onBoarded,
     accounts,
     envelopes,
-    setProfile: async (retrievProfile, params) => {
-      createProfileContext(retrievProfile, params);
+    setProfile: async (profileUsecase, params) => {
+      createProfileContext(profileUsecase, params);
     },
   };
 

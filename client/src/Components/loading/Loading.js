@@ -1,10 +1,23 @@
-import React, { useContext } from "react";
-import { LanguageContext } from "../locale/LanguageProvider";
+import React from 'react';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles } from '@material-ui/core/styles';
 
-export const Loading = (props) => {
-  const t = useContext(LanguageContext).dictionary;
+const useStyles = makeStyles((theme) => ({
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
+}));
 
-  return <div>{t.LoadingMessage ? t.LoadingMessage : "Loading..."}</div>;
-};
+export default function Loading() {
+  const classes = useStyles();
 
-export default Loading;
+  return (
+    <div>
+      <Backdrop className={classes.backdrop} open={true}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    </div>
+  );
+}

@@ -24,13 +24,11 @@ export const RemoveChangeIconGroup = (props) => {
   const leftButton = clsx(classes.settingsButton, classes.buttons);
 
   const triggerChanged = (event) => {
-    const changeId = id + "_Change";
-    if (changeHandler) changeHandler(changeId);
+    if (changeHandler) changeHandler(id);
   };
 
   const triggerRemove = () => {
-    const removeId = id + "_Remove";
-    if (removeHandler) removeHandler(removeId);
+    if (removeHandler) removeHandler(id);
   };
 
   return (

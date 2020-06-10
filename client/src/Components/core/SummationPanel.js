@@ -83,7 +83,7 @@ export const SummationPanel = (props) => {
 
   const triggerTransactions = (event) => {
     event.stopPropagation();
-    const transId = id + "_Transactions";
+    const transId = id;
     if (transactionHandler) transactionHandler(transId);
   };
 

@@ -7,7 +7,7 @@ import { LanguageContext } from "../../Components/locale/LanguageProvider";
 import { ProfileContext } from "../../Components/Profile/ProfileProvider";
 import Loading from "../../Components/loading/Loading";
 import { ViewContext } from "../../Components/view/ViewProvider";
-import { setProfile } from "../../usecases/user-api.usecase";
+import { setProfile } from "../../usecases/profile-api.usecase";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,7 +81,7 @@ export const ProfileEdit = (props) => {
         email: newEmail,
       },
     });
-    setView("profile");
+    setView("home");
   };
 
   if (loading) {
