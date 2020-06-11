@@ -16,11 +16,8 @@ export const getTransactions = async (params) => {
 
 export const getInboxTransactions = async (params) => {
   const { token, page } = params;
-  console.log(params);
   const requestUrl = inbox + "/" + page;
-  console.log(requestUrl);
   const responseData = await fetchIt(host + requestUrl, token);
-  console.log(responseData);
   return responseData;
 };
 

@@ -39,14 +39,14 @@ So, I've done some debating... I am going to start with an app that does 'envelo
 
 ## Setup Client
 ### Configure Client API
-    In *root*/client, create a file '**.env.development**'
+    In root/client, create a file '.env.development'
 
     Add the following lines
     REACT_APP_API_PORT=3001
     REACT_APP_API_ORIGIN=http://localhost
 
 ### Configure Client Auth0 
-    In *root*/client, create a file '**auth_config.json**'
+    In root/client, create a file 'auth_config.json'
 
     Add the following lines, update with your Auth0 information and save (only add audience once you create your Auth0 API)
 ```json
@@ -59,19 +59,19 @@ So, I've done some debating... I am going to start with an app that does 'envelo
 
 ## Setup Server
 ### Configure Server Port
-    In *root*/server, create a file '**.env**'
+    In root/server, create a file '.env'
 
     Add the following line
     APP_PORT=3001
 
 ### Configure Server Cors to Accept Calls From Client App
-    In *root*/server, add lines to '**.env**' file
+    In root/server, add lines to '.env' file
 
     APP_ORIGIN_PORT=3000
     APP_ORIGIN=http://localhost
 
 ### Configure Server to Parse Auth0 Token
-    In *root*/server, add lines to '**.env**' file
+    In root/server, add lines to '.env' file
 
     AUTH0_DOMAIN=your-app-domain.auth0.com
     AUTH0_CLIENT_ID=your-client-id
@@ -137,3 +137,6 @@ https://github.com/testing-library/react-testing-library/issues/441#issuecomment
 
 Fixing Issues with Exceptions and JSON Stringify
 https://stackoverflow.com/questions/18391212/is-it-not-possible-to-stringify-an-error-using-json-stringify
+
+Securing my express api
+https://www.freecodecamp.org/news/express-js-security-tips/

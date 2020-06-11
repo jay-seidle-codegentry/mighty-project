@@ -5,6 +5,8 @@ const { checkJwt, parseJwt } = require("./utils/auth.utils");
 require("dotenv").config();
 
 const app = express();
+app.disable('x-powered-by');
+var hpp = require('hpp');
 const origin = process.env.APP_ORIGIN;
 const originPort = process.env.APP_ORIGIN_PORT;
 const port = process.env.APP_PORT;
@@ -12,6 +14,7 @@ const port = process.env.APP_PORT;
 app.use(cors({ origin: `${origin}:${originPort}` }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(hpp());
 
 let user = {
   id: "5ed3e11f8acdde2754441c39",

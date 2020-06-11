@@ -16,6 +16,8 @@
     "express": "^4.17.1",
     "express-fileupload": "^1.1.7-alpha.3",
     "express-jwt": "^5.3.3",
+    "helmet": "^3.22.1",
+    "hpp": "^0.2.3",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^1.8.0",
     "mongodb": "^3.5.6",
