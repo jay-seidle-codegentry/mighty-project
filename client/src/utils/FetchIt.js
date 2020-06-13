@@ -1,4 +1,22 @@
-export const fetchIt = async (url, token, body) => {
+const axios = require("axios");
+const postUpload = async (token, url, file) => {
+  var formData = new FormData();
+  formData.append("csv", file);
+
+  const res = await axios({
+    url: url,
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    data: formData,
+  });
+
+  return res;
+};
+
+export const fetchIt = async (url, params) => {
+  const { token, body, file } = params; //type, headers??
   let options = token
     ? {
         headers: {
@@ -7,7 +25,7 @@ export const fetchIt = async (url, token, body) => {
       }
     : {};
 
-    options = body
+  options = body
     ? {
         method: "POST",
         headers: {
@@ -18,6 +36,10 @@ export const fetchIt = async (url, token, body) => {
         body: JSON.stringify(body),
       }
     : options;
+
+  if (file) {
+    return postUpload(token, url, file);
+  }
 
   let data = null;
 

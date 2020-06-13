@@ -62,6 +62,32 @@ export const TransactionProvider = (props) => {
     setLoading(false);
   };
 
+  const [uploading, setUploading] = useState(false);
+  const [stagedTransactions, setStagedTransactions] = useState(null);
+
+  const uploadTransactions = async (retrieveUploadTransactions, params) => {
+    setUploading(true);
+    try {
+      const token = await getTokenSilently();
+      const response = await retrieveUploadTransactions({ token: token, ...params });
+      console.log(response.data.responseState ? response.data.responseState.msg : "no response state");
+      setErrorState(
+        response.error ? response.error : initialContext.errorState
+      );
+      //setPage(response.page ? response.page : transactionContext.page);
+      //setMore(response.more ? response.more : transactionContext.more);
+      setStagedTransactions(
+        response.transactions
+          ? response.transactions
+          : null
+      );
+    } catch (e) {
+      const errorMessage = { error: JSON.stringify(e.message, null, 2) };
+      setErrorState(errorMessage);
+    }
+    setUploading(false);
+  };
+
   if (initializing) {
     createTransactionContext(runMethod, { page: 0 });
     setInitializing(false);
@@ -69,10 +95,12 @@ export const TransactionProvider = (props) => {
 
   const provider = {
     loading,
+    uploading,
     errorState,
     page,
     more,
     transactions,
+    stagedTransactions,
     setNextPage: async (params) => {
       createTransactionContext(runMethod, { page: (page + 1), ...params });
     },
@@ -81,8 +109,12 @@ export const TransactionProvider = (props) => {
     },
   };
 
+  function setUploadTransactions(transactionUsecase, params) {
+    uploadTransactions(transactionUsecase, params);
+  };
+
   return (
-    <TransactionContext.Provider value={provider}>
+    <TransactionContext.Provider value={{provider, setUploadTransactions}}>
       {props.children}
     </TransactionContext.Provider>
   );

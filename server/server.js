@@ -1,20 +1,57 @@
 const express = require("express");
+const fileUpload = require("express-fileupload");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const morgan = require("morgan");
 const { checkJwt, parseJwt } = require("./utils/auth.utils");
 require("dotenv").config();
+const _ = require("lodash");
 
 const app = express();
-app.disable('x-powered-by');
-var hpp = require('hpp');
+app.disable("x-powered-by");
+var hpp = require("hpp");
 const origin = process.env.APP_ORIGIN;
 const originPort = process.env.APP_ORIGIN_PORT;
 const port = process.env.APP_PORT;
+const uploadsFolder = process.env.UPLOADS_FOLDER;
 
+app.use(
+  fileUpload({
+    createParentPath: true,
+    limits: {
+      fileSize: 200 * 1024 * 1024, //200KBs max file(s) size
+    },
+  })
+);
 app.use(cors({ origin: `${origin}:${originPort}` }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(morgan("dev"));
 app.use(hpp());
+
+let transactions = [
+  {
+    amount: "-105.97",
+    date: "Mon, December 17",
+    description: "VERIZON ONLINE PMT",
+    account: "Checking",
+    type: "purchase",
+  },
+  {
+    amount: "10294.97",
+    date: "Mon, December 17",
+    description: "U-TRADE Direct Deposit",
+    account: "Checking",
+    type: "deposit",
+  },
+  {
+    amount: "-225.47",
+    date: "Mon, December 25",
+    description: "Joe's Meat Farm - Roast Beef",
+    account: "Checking",
+    type: "purchase",
+  },
+];
 
 let user = {
   id: "5ed3e11f8acdde2754441c39",
@@ -144,10 +181,10 @@ app.post("/api/profile", checkJwt, (req, res) => {
 });
 
 app.post("/api/account/save", checkJwt, (req, res) => {
-  const {id, title, detail} = req.body;
+  const { id, title, detail } = req.body;
   let msg = "account not found; nothing updated";
 
-  if(id) {
+  if (id) {
     const accountList = user.accounts.filter(function (account) {
       if (account.id == id) {
         if (title) account.title = title;
@@ -156,12 +193,11 @@ app.post("/api/account/save", checkJwt, (req, res) => {
       }
       return true;
     });
-  
-    user.accounts = accountList;  
-  }
-  else {
+
+    user.accounts = accountList;
+  } else {
     msg = "account added successfully";
-    req.body.id = ((Math.random() * 1000000) + 1).toString();
+    req.body.id = (Math.random() * 1000000 + 1).toString();
     user.accounts.push(req.body);
   }
   user.responseState = { msg: msg };
@@ -197,30 +233,41 @@ app.get("/api/transactions/inbox/:pageId", checkJwt, (req, res) => {
     page: page,
     more: false,
     errorState: {},
-    transactions: [
-      {
-        amount: "-105.97",
-        date: "Mon, December 17",
-        description: "VERIZON ONLINE PMT",
-        account: "Checking",
-        type: "purchase",
-      },
-      {
-        amount: "10294.97",
-        date: "Mon, December 17",
-        description: "U-TRADE Direct Deposit",
-        account: "Checking",
-        type: "deposit",
-      },
-      {
-        amount: "-225.47",
-        date: "Mon, December 25",
-        description: "Joe's Meat Farm - Roast Beef",
-        account: "Checking",
-        type: "purchase",
-      },
-    ],
+    transactions: transactions,
   });
+});
+
+app.post("/api/transactions/upload", checkJwt, async (req, res) => {
+  try {
+    if (!req.files) {
+      console.log("no files");
+      res.send({
+        status: false,
+        responseState: { msg: "No file uploaded" },
+      });
+    } else {
+      const date = new Date();
+      console.log("has files " + date.toLocaleTimeString() );
+      //Use the name of the input field (i.e. "csv") to retrieve the uploaded file
+      let csvFile = req.files.csv;
+      console.log(csvFile.name);
+      //Use the mv() method to place the file in upload directory (i.e. "uploads")
+      csvFile.mv(uploadsFolder + csvFile.name);
+      console.log("after move; sending response");
+      //send response
+      res.send({
+        status: true,
+        responseState: { msg: "File is uploaded" },
+        data: {
+          name: csvFile.name,
+          mimetype: csvFile.mimetype,
+          size: csvFile.size,
+        },
+      });
+    }
+  } catch (err) {
+    res.status(500).send(err);
+  }
 });
 
 app.get("/api/external", checkJwt, (req, res) => {

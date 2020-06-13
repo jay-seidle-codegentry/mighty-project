@@ -77,6 +77,11 @@ So, I've done some debating... I am going to start with an app that does 'envelo
     AUTH0_CLIENT_ID=your-client-id
     AUTO0_AUDIENCE=http://your-api-identifier
 
+### Configure Server uploads folder for new transactions
+    In root/server, add lines to '.env' file
+
+    UPLOADS_FOLDER=../uploads/
+
 ## To Run
 ### Start Server
     cd server
@@ -96,6 +101,7 @@ https://jwt.io/
 https://stackoverflow.com/questions/38552003/how-to-decode-jwt-token-in-javascript-without-using-a-library 
 
 Upload and Parse CSV
+https://www.youtube.com/watch?time_continue=148&v=0TTa5Ulmgds&feature=emb_logo
 https://www.youtube.com/watch?v=9_x-UIVlxgo
 https://bezkoder.com/node-js-csv-mongodb-collection/ 
 https://github.com/richardgirges/express-fileupload/blob/master/lib/fileFactory.js

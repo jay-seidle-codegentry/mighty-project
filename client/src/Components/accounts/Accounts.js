@@ -43,7 +43,7 @@ export const Accounts = (props) => {
     setRemoveItem(account);
   };
 
-  const changeClosed = () => {
+  const changeClosed = (payload) => {
     setChangeItem(false);
   };
 

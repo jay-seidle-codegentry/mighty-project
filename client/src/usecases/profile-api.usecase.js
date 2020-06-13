@@ -8,26 +8,22 @@ const accountRemove = "/api/account/remove";
 const accountSave = "/api/account/save";
 
 export const getProfile = async (params) => {
-  const { token, headers } = params;
-  const responseData = await fetchIt(host + profile, token, headers);
+  const responseData = await fetchIt(host + profile, params);
   return responseData;
 };
 
 export const setProfile = async (params) => {
-  const { token, body } = params;
-  const responseData = await fetchIt(host + profile, token, body);
+  const responseData = await fetchIt(host + profile, params);
   return responseData;
 };
 
 export const removeAccount = async (params) => {
-  const {token, body} = params;
-  const responseData = await fetchIt(host + accountRemove, token, body);
+  const responseData = await fetchIt(host + accountRemove, params);
   return responseData;
 };
 
 export const saveAccount = async (params) => {
-  const {token, body} = params;
-  const responseData = await fetchIt(host + accountSave, token, body);
+  const responseData = await fetchIt(host + accountSave, params);
   return responseData;
 }
 

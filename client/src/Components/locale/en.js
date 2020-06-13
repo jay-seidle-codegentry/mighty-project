@@ -65,6 +65,11 @@ const en = {
       SavedMessage: "Account Saved!",
       CanceledMessage: "Canceled.",
     },
+    Selector: {
+      Title: "Upload Account?",
+      CanceledMessage: "Canceled.",
+      SelectedMessage: "Account Selected",
+    },
   },
   Dialogs: {
     Dialoger: {
