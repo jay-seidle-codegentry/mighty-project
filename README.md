@@ -101,6 +101,7 @@ https://jwt.io/
 https://stackoverflow.com/questions/38552003/how-to-decode-jwt-token-in-javascript-without-using-a-library 
 
 Upload and Parse CSV
+https://c2fo.io/fast-csv/docs/parsing/examples/#max-rows 
 https://www.youtube.com/watch?time_continue=148&v=0TTa5Ulmgds&feature=emb_logo
 https://www.youtube.com/watch?v=9_x-UIVlxgo
 https://bezkoder.com/node-js-csv-mongodb-collection/ 

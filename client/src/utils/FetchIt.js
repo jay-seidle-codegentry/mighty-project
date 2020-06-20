@@ -1,7 +1,9 @@
 const axios = require("axios");
-const postUpload = async (token, url, file) => {
+const postUpload = async (token, url, params) => {
+  const { file, account } = params;
   var formData = new FormData();
   formData.append("csv", file);
+  formData.append("account", JSON.stringify(account));
 
   const res = await axios({
     url: url,
@@ -38,7 +40,7 @@ export const fetchIt = async (url, params) => {
     : options;
 
   if (file) {
-    return postUpload(token, url, file);
+    return postUpload(token, url, params);
   }
 
   let data = null;

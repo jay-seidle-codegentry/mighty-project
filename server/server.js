@@ -6,10 +6,14 @@ const morgan = require("morgan");
 const { checkJwt, parseJwt } = require("./utils/auth.utils");
 require("dotenv").config();
 const _ = require("lodash");
+const csv = require("csvtojson");
+require("./utils/column-mapper");
+var md5 = require('md5');
 
 const app = express();
 app.disable("x-powered-by");
 var hpp = require("hpp");
+const { getMapping } = require("./utils/column-mapper");
 const origin = process.env.APP_ORIGIN;
 const originPort = process.env.APP_ORIGIN_PORT;
 const port = process.env.APP_PORT;
@@ -247,21 +251,34 @@ app.post("/api/transactions/upload", checkJwt, async (req, res) => {
       });
     } else {
       const date = new Date();
-      console.log("has files " + date.toLocaleTimeString() );
+      //console.log("has files " + date.toLocaleTimeString());
       //Use the name of the input field (i.e. "csv") to retrieve the uploaded file
       let csvFile = req.files.csv;
-      console.log(csvFile.name);
+      let accountJson = req.body.account;
+      let account = JSON.parse(accountJson);
+      console.log(account);
+      //console.log(csvFile.name);
       //Use the mv() method to place the file in upload directory (i.e. "uploads")
-      csvFile.mv(uploadsFolder + csvFile.name);
-      console.log("after move; sending response");
+      const fileName = md5(csvFile.name);
+      csvFile.mv(uploadsFolder + fileName);
+
+      const jsonArray = await csv({
+        noheader: true,
+      }).fromFile(uploadsFolder + csvFile.name);
+      //console.log(jsonArray.slice(0,10));
+
+      console.log(await getMapping(jsonArray.slice(0, 10)));
+
+      //console.log("after move; sending response");
       //send response
       res.send({
         status: true,
         responseState: { msg: "File is uploaded" },
         data: {
-          name: csvFile.name,
+          key: fileName,
           mimetype: csvFile.mimetype,
           size: csvFile.size,
+          items: jsonArray.slice(0, 10),
         },
       });
     }

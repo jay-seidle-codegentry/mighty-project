@@ -76,6 +76,7 @@ export const TransactionProvider = (props) => {
       );
       //setPage(response.page ? response.page : transactionContext.page);
       //setMore(response.more ? response.more : transactionContext.more);
+      console.log(response.data);
       setStagedTransactions(
         response.transactions
           ? response.transactions

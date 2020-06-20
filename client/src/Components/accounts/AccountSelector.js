@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import { LanguageContext } from "../locale/LanguageProvider";
 import { ProfileContext } from "../Profile/ProfileProvider";
 import { Typography, List, ListItem, ListItemText } from "@material-ui/core";
@@ -26,13 +26,16 @@ export const AccountSelector = (props) => {
     LanguageContext
   ).dictionary.Account.Selector;
   const accounts = useContext(ProfileContext).accounts;
+  const selectedAccount = useRef();
 
   const selectAccount = (account) => {
-    accountSelectedHandler({ account: account, message: SelectedMessage });
+    selectAccount.current = account;
+    console.log(selectAccount.current);
+    accountSelectedHandler({ account: selectAccount.current, message: SelectedMessage });
   };
 
   const closeIt = () => {
-    accountSelectedHandler({ canceled: true });
+    if(!selectedAccount) accountSelectedHandler({ canceled: true });
   };
 
   return (

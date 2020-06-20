@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import Typography from "@material-ui/core/Typography";
 import { Grid, IconButton } from "@material-ui/core";
 import MoveToInboxIcon from "@material-ui/icons/MoveToInbox";
@@ -25,8 +25,6 @@ export const Inbox = (props) => {
 
   const { expanded, onChange } = props;
 
-  const [showAccountSelector, setShowAccountSelector] = useState(false);
-
   const assign = (event) => {
     alert("assign transaction from " + event);
   };
@@ -50,29 +48,53 @@ export const Inbox = (props) => {
 
   const uploader = useRef(null);
 
+  const selectedAccount = useRef();
+
+  const [showAccountSelector, setShowAccountSelector] = useState(false);
+  
+  const [uiState, setUiState] = useState(0);
+
+  useEffect(() => {
+    if(uiState === 0) return;
+    setShowAccountSelector(Boolean(uiState===1));
+    if(uiState === 2) {
+      uploader.current.click();
+      setUiState(0);
+    }
+  }, [uiState]);
+
   const triggerUpload = (event) => {
     event.stopPropagation();
-    setShowAccountSelector(true);
+    if(uiState !== 0) return;
+    selectedAccount.current = null;
+    setUiState(1);
   };
 
-  const accountSelected = (result) => {
-    const { account, message} = result;
-    setShowAccountSelector(false);
-    if(message) console.log(message);
-    if (account) {
-      uploader.current.click();
+  const dialogerCloseHandler = () => {
+    if(uiState===1) {
+      setUiState(0);
     }
   };
 
+  const accountSelected = (result) => {
+    selectedAccount.current = result.account;
+    setUiState(2);
+    if (result.message) console.log(result.message);
+  };
+
   const fileSelected = (event) => {
-    if(!event.target.value) return;
-    setShowAccountSelector(false);
-    const formData = new FormData();
+    if (!event.target.value) return;
+    //const formData = new FormData();
     if (event.target.files.length < 1) return;
     const file = event.target.files[0];
-    formData.append("csv", event.target.files[0], event.target.files[0].name);
-    setUploadTransactions(uploadTransactions, { type: "csv", file: file });
-    event.target.value="";
+    //formData.append("csv", event.target.files[0], event.target.files[0].name);
+    console.log(selectedAccount.current);
+    setUploadTransactions(uploadTransactions, {
+      account: selectedAccount.current,
+      type: "csv",
+      file: file,
+    });
+    event.target.value = "";
   };
 
   return (
@@ -120,8 +142,11 @@ export const Inbox = (props) => {
           </div>
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      {showAccountSelector && (
-        <Dialoger open={showAccountSelector} closeHandler={accountSelected}>
+      {(uiState===1) && (
+        <Dialoger
+          open={showAccountSelector}
+          closeHandler={dialogerCloseHandler}
+        >
           <AccountSelector accountSelectedHandler={accountSelected} />
         </Dialoger>
       )}
