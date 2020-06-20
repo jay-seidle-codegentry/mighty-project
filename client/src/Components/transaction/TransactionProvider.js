@@ -20,7 +20,7 @@ export const TransactionContext = React.createContext(initialContext);
 export const TransactionProvider = (props) => {
   let runMethod = getTransactions;
   if (props) {
-    if(props.type === "inbox") {
+    if (props.type === "inbox") {
       runMethod = getInboxTransactions;
     }
   }
@@ -63,25 +63,28 @@ export const TransactionProvider = (props) => {
   };
 
   const [uploading, setUploading] = useState(false);
-  const [stagedTransactions, setStagedTransactions] = useState(null);
+  const [stagedTransactionInfo, setStagedTransactionInfo] = useState(null);
 
   const uploadTransactions = async (retrieveUploadTransactions, params) => {
     setUploading(true);
     try {
       const token = await getTokenSilently();
-      const response = await retrieveUploadTransactions({ token: token, ...params });
-      console.log(response.data.responseState ? response.data.responseState.msg : "no response state");
+      const response = await retrieveUploadTransactions({
+        token: token,
+        ...params,
+      });
+
+      console.log(
+        response.data.responseState
+          ? response.data.responseState.msg
+          : "no response state"
+      );
+
       setErrorState(
         response.error ? response.error : initialContext.errorState
       );
-      //setPage(response.page ? response.page : transactionContext.page);
-      //setMore(response.more ? response.more : transactionContext.more);
-      console.log(response.data);
-      setStagedTransactions(
-        response.transactions
-          ? response.transactions
-          : null
-      );
+
+      setStagedTransactionInfo(response.data ? response.data : null);
     } catch (e) {
       const errorMessage = { error: JSON.stringify(e.message, null, 2) };
       setErrorState(errorMessage);
@@ -101,21 +104,22 @@ export const TransactionProvider = (props) => {
     page,
     more,
     transactions,
-    stagedTransactions,
+    stagedTransactionInfo,
     setNextPage: async (params) => {
-      createTransactionContext(runMethod, { page: (page + 1), ...params });
+      createTransactionContext(runMethod, { page: page + 1, ...params });
     },
     setPrevPage: async (params) => {
-      createTransactionContext(runMethod, { page: (page - 1), ...params });
+      createTransactionContext(runMethod, { page: page - 1, ...params });
     },
   };
 
+  // TODO: This is how i should have done all setter functions this way - REFACTOR and add to provider value
   function setUploadTransactions(transactionUsecase, params) {
     uploadTransactions(transactionUsecase, params);
-  };
+  }
 
   return (
-    <TransactionContext.Provider value={{provider, setUploadTransactions}}>
+    <TransactionContext.Provider value={{ provider, setUploadTransactions }}>
       {props.children}
     </TransactionContext.Provider>
   );

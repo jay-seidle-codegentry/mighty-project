@@ -20,7 +20,7 @@ export const Inbox = (props) => {
   const T = useContext(LanguageContext).dictionary;
   const setUploadTransactions = useContext(TransactionContext)
     .setUploadTransactions;
-  const { transactions } = useContext(TransactionContext).provider;
+  const { transactions, stagedTransactionInfo } = useContext(TransactionContext).provider;
   const classes = useStyles();
 
   const { expanded, onChange } = props;
@@ -96,6 +96,8 @@ export const Inbox = (props) => {
     });
     event.target.value = "";
   };
+
+  console.log(stagedTransactionInfo);
 
   return (
     <>

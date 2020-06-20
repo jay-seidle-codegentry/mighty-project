@@ -265,9 +265,10 @@ app.post("/api/transactions/upload", checkJwt, async (req, res) => {
       const jsonArray = await csv({
         noheader: true,
       }).fromFile(uploadsFolder + csvFile.name);
-      //console.log(jsonArray.slice(0,10));
 
-      console.log(await getMapping(jsonArray.slice(0, 10)));
+      const sampleData = jsonArray.slice(0, 10);
+      const mapping = await getMapping(sampleData);
+      console.log(mapping);
 
       //console.log("after move; sending response");
       //send response
@@ -278,7 +279,8 @@ app.post("/api/transactions/upload", checkJwt, async (req, res) => {
           key: fileName,
           mimetype: csvFile.mimetype,
           size: csvFile.size,
-          items: jsonArray.slice(0, 10),
+          items: sampleData,
+          mapping: mapping,
         },
       });
     }
