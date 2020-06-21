@@ -80,7 +80,12 @@ So, I've done some debating... I am going to start with an app that does 'envelo
 ### Configure Server uploads folder for new transactions
     In root/server, add lines to '.env' file
 
+    # Folder outside of server path
     UPLOADS_FOLDER=../uploads/
+    # Interval to run uploaded files clean up - in ms
+    UPLOADS_CLEANUP_INTERVAL=60000 
+    # How long an uploaded file lives before cleaned up - in ms
+    UPLOADS_TTL=1800000
 
 ## To Run
 ### Start Server

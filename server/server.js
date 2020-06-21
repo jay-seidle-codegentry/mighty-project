@@ -8,12 +8,14 @@ require("dotenv").config();
 const _ = require("lodash");
 const csv = require("csvtojson");
 require("./utils/column-mapper");
-var md5 = require('md5');
+require("./utils/cleanup");
+var md5 = require("md5");
 
 const app = express();
 app.disable("x-powered-by");
 var hpp = require("hpp");
 const { getMapping } = require("./utils/column-mapper");
+const { initializeCleanup } = require("./utils/cleanup");
 const origin = process.env.APP_ORIGIN;
 const originPort = process.env.APP_ORIGIN_PORT;
 const port = process.env.APP_PORT;
@@ -250,21 +252,19 @@ app.post("/api/transactions/upload", checkJwt, async (req, res) => {
         responseState: { msg: "No file uploaded" },
       });
     } else {
-      const date = new Date();
-      //console.log("has files " + date.toLocaleTimeString());
       //Use the name of the input field (i.e. "csv") to retrieve the uploaded file
       let csvFile = req.files.csv;
       let accountJson = req.body.account;
       let account = JSON.parse(accountJson);
-      console.log(account);
       //console.log(csvFile.name);
       //Use the mv() method to place the file in upload directory (i.e. "uploads")
-      const fileName = md5(csvFile.name);
-      csvFile.mv(uploadsFolder + fileName);
+      const fileRandomizer = Math.random() * Number.MAX_VALUE;
+      const fileName = md5(fileRandomizer + csvFile.name);
+      await csvFile.mv(uploadsFolder + fileName);
 
       const jsonArray = await csv({
         noheader: true,
-      }).fromFile(uploadsFolder + csvFile.name);
+      }).fromFile(uploadsFolder + fileName);
 
       const sampleData = jsonArray.slice(0, 10);
       const mapping = await getMapping(sampleData);
@@ -285,6 +285,7 @@ app.post("/api/transactions/upload", checkJwt, async (req, res) => {
       });
     }
   } catch (err) {
+    console.error(err);
     res.status(500).send(err);
   }
 });
@@ -303,4 +304,5 @@ app.get("/api/timestamp", (req, res) => {
   });
 });
 
+initializeCleanup();
 app.listen(port, () => console.log("API listening on " + port));
