@@ -24,18 +24,25 @@ So, I've done some debating... I am going to start with an app that does 'envelo
 
 ## What's Working
 ### Server
-1. Backend Profile Service - is stubbed out. The GET returns 'user not found' json object and the POST updates it.  It is not storing the info.  **NOTE**: to get back to 'user not found', restart the server
+**NOTE**: to get back to clean slate, restart the server
+1. Backend Profile Service - is stubbed out. The GET returns 'user not found' json object and the POST updates it.  It is not storing the info
+1. Backend for getting Inbox items (transactions with no envelope set) is stubbed out
+1. Backend for Add, Update and Remove accounts is stubbed out
+1. Backend for uploading csv and returning confirmation info stubbed out
+1. Backend for importing uploaded csv post confirmation stubbed out
 
 ### Client
 1. Landing Page
 1. Login / Register using Auth0
-1. Language Support (english and spanish)
+1. Language Support (english and spanish) - not supported in all areas; coming back to this to complete
 1. Hamburger main menu - partially wired up
 1. Profile Photo menu - partially wired up
 1. View Profile
 1. Edit Profile
 1. Post login, if new user is detected, it takes you to Edit Profile
-1. Prototype of Home View - not wired up
+1. Home View - support getting accounts, envelopes and inbox transactions
+1. Home View | Accounts - supports add, edit and remove
+1. Home View | Inbox - supports upload csv file of transactions, confirm dialog for data starting row and column assignments; transactions adjust selected account balance as well
 
 ## Setup Client
 ### Configure Client API

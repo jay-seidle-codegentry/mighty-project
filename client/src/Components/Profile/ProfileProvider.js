@@ -47,7 +47,7 @@ export const ProfileProvider = (props) => {
     let profile = {};
     try {
       const token = await getTokenSilently();
-      //console.log(params)
+
       profile = await profileUsecase({ token: token, ...params });
       setExists(profile.exists ? profile.exists : initialContext.exists);
       setErrorState(profile.error ? profile.error : initialContext.errorState);

@@ -8,6 +8,7 @@ export default function Dialoger(props) {
   return (
     <div>
       <Dialog
+        maxWidth="xl"
         open={open}
         onClose={closeHandler}
         aria-labelledby="form-dialog-title"

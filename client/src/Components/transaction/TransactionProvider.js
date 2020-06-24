@@ -42,7 +42,6 @@ export const TransactionProvider = (props) => {
     setLoading(true);
     try {
       const token = await getTokenSilently();
-      //console.log(params)
       const response = await retrieveTransactions({ token: token, ...params });
 
       setErrorState(
@@ -62,6 +61,17 @@ export const TransactionProvider = (props) => {
     setLoading(false);
   };
 
+  const importTransactionalContext = async (retrieveTransactions, params) => {
+    // Setting no state here;  relying on profile update to refresh when account balance is set
+    try {
+      const token = await getTokenSilently();
+      await retrieveTransactions({ token: token, ...params });
+    } catch (e) {
+      const errorMessage = { error: JSON.stringify(e.message, null, 2) };
+      setErrorState(errorMessage);
+    }
+  };
+
   const [uploading, setUploading] = useState(false);
   const [stagedTransactionInfo, setStagedTransactionInfo] = useState(null);
 
@@ -74,11 +84,11 @@ export const TransactionProvider = (props) => {
         ...params,
       });
 
-      console.log(
-        response.data.responseState
-          ? response.data.responseState.msg
-          : "no response state"
-      );
+      // console.log(
+      //   response.data.responseState
+      //     ? response.data.responseState.msg
+      //     : "no response state"
+      // );
 
       setErrorState(
         response.error ? response.error : initialContext.errorState
@@ -114,12 +124,22 @@ export const TransactionProvider = (props) => {
   };
 
   // TODO: This is how i should have done all setter functions this way - REFACTOR and add to provider value
-  function setUploadTransactions(transactionUsecase, params) {
+  const setUploadTransactions = (transactionUsecase, params) => {
     uploadTransactions(transactionUsecase, params);
-  }
+  };
+
+  const clearStagedTransactions = () => {
+    setStagedTransactionInfo(null);
+  };
+
+  const importTransactions = async (transactionUsecase, params) => {
+    await importTransactionalContext(transactionUsecase, params);
+  };
 
   return (
-    <TransactionContext.Provider value={{ provider, setUploadTransactions }}>
+    <TransactionContext.Provider
+      value={{ provider, importTransactions, setUploadTransactions, clearStagedTransactions }}
+    >
       {props.children}
     </TransactionContext.Provider>
   );

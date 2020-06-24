@@ -30,7 +30,6 @@ export const AccountSelector = (props) => {
 
   const selectAccount = (account) => {
     selectAccount.current = account;
-    console.log(selectAccount.current);
     accountSelectedHandler({ account: selectAccount.current, message: SelectedMessage });
   };
 

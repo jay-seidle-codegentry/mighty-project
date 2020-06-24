@@ -17,12 +17,13 @@ const getMapping = async (csvJson) => {
 
   // TODO: Need to account for fields equally scored
 
-  return {
-    "date": bestDate,
-    "amount": bestAmount,
-    "type": bestType,
-    "descriptions": bestDescription,
-  };
+  const mapping = {};
+  mapping[bestDate] = "DATE";
+  mapping[bestAmount] = "AMOUNT";
+  mapping[bestType] = "TYPE";
+  mapping[bestDescription] = "DESCRIPTION";
+
+  return mapping;
 };
 
 const initializeScorecard = () => {
@@ -151,7 +152,7 @@ const scoreForDescription = (value, scorecard) => {
 
   if (isNaN(Number(fieldValue))) incrementScore(scorecard, descriptionColumn);
 
-  if (!fieldValue.includes("deposit") && !fieldValue.includes("withdraw") && !fieldValue.includes("sale"))
+  if (!fieldValue.includes("deposit") && !fieldValue.includes("withdraw") && !fieldValue.includes("sale") && !fieldValue.includes("category"))
     incrementScore(scorecard, descriptionColumn);
 };
 

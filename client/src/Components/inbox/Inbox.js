@@ -4,6 +4,7 @@ import { Grid, IconButton } from "@material-ui/core";
 import MoveToInboxIcon from "@material-ui/icons/MoveToInbox";
 import PublishIcon from "@material-ui/icons/Publish";
 import InboxCard from "./InboxCard";
+import ImportVerification from "./ImportVerification";
 import { TransactionContext } from "../transaction/TransactionProvider";
 import { LanguageContext } from "../../Components/locale/LanguageProvider";
 import {
@@ -15,12 +16,19 @@ import {
 import { uploadTransactions } from "../../usecases/transactions_api.usecase";
 import Dialoger from "../core/Dialoger";
 import { AccountSelector } from "../accounts/AccountSelector";
+import { ProfileContext } from "../Profile/ProfileProvider";
+import { getProfile } from "../../usecases/profile-api.usecase";
 
 export const Inbox = (props) => {
+  const provider = useContext(ProfileContext);
   const T = useContext(LanguageContext).dictionary;
   const setUploadTransactions = useContext(TransactionContext)
     .setUploadTransactions;
-  const { transactions, stagedTransactionInfo } = useContext(TransactionContext).provider;
+  const clearStagedTransactions = useContext(TransactionContext)
+    .clearStagedTransactions;
+  const { transactions, stagedTransactionInfo } = useContext(
+    TransactionContext
+  ).provider;
   const classes = useStyles();
 
   const { expanded, onChange } = props;
@@ -51,27 +59,27 @@ export const Inbox = (props) => {
   const selectedAccount = useRef();
 
   const [showAccountSelector, setShowAccountSelector] = useState(false);
-  
+
   const [uiState, setUiState] = useState(0);
 
   useEffect(() => {
-    if(uiState === 0) return;
-    setShowAccountSelector(Boolean(uiState===1));
-    if(uiState === 2) {
+    if (uiState === 0) return;
+    setShowAccountSelector(Boolean(uiState === 1));
+    if (uiState === 2) {
       uploader.current.click();
-      setUiState(0);
+      setUiState(3);
     }
   }, [uiState]);
 
   const triggerUpload = (event) => {
     event.stopPropagation();
-    if(uiState !== 0) return;
+    if (uiState !== 0) return;
     selectedAccount.current = null;
     setUiState(1);
   };
 
   const dialogerCloseHandler = () => {
-    if(uiState===1) {
+    if (uiState === 1) {
       setUiState(0);
     }
   };
@@ -84,11 +92,10 @@ export const Inbox = (props) => {
 
   const fileSelected = (event) => {
     if (!event.target.value) return;
-    //const formData = new FormData();
+
     if (event.target.files.length < 1) return;
     const file = event.target.files[0];
-    //formData.append("csv", event.target.files[0], event.target.files[0].name);
-    console.log(selectedAccount.current);
+
     setUploadTransactions(uploadTransactions, {
       account: selectedAccount.current,
       type: "csv",
@@ -97,7 +104,13 @@ export const Inbox = (props) => {
     event.target.value = "";
   };
 
-  console.log(stagedTransactionInfo);
+  const dialogerImportCloseHandler = () => {
+    if (uiState === 3) {
+      clearStagedTransactions();
+      setUiState(0);
+      provider.setProfile(getProfile, {headers: {aktualisierung : true}});
+    }
+  };
 
   return (
     <>
@@ -144,12 +157,20 @@ export const Inbox = (props) => {
           </div>
         </ExpansionPanelDetails>
       </ExpansionPanel>
-      {(uiState===1) && (
+      {uiState === 1 && (
         <Dialoger
           open={showAccountSelector}
           closeHandler={dialogerCloseHandler}
         >
           <AccountSelector accountSelectedHandler={accountSelected} />
+        </Dialoger>
+      )}
+      {Boolean(uiState === 3 && stagedTransactionInfo) && (
+        <Dialoger
+          open={Boolean(uiState === 3 && stagedTransactionInfo)}
+          closeHandler={dialogerImportCloseHandler}
+        >
+          <ImportVerification closeHandler={dialogerImportCloseHandler} />
         </Dialoger>
       )}
     </>

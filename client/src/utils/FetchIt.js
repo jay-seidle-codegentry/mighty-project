@@ -18,11 +18,13 @@ const postUpload = async (token, url, params) => {
 };
 
 export const fetchIt = async (url, params) => {
-  const { token, body, file } = params; //type, headers??
+  const { token, body, file, headers } = params; //type, headers??
   let options = token
     ? {
         headers: {
           Authorization: `Bearer ${token}`,
+          refresh: "true",
+          ...headers,
         },
       }
     : {};

@@ -9,6 +9,7 @@ const _ = require("lodash");
 const csv = require("csvtojson");
 require("./utils/column-mapper");
 require("./utils/cleanup");
+const fs = require("fs");
 var md5 = require("md5");
 
 const app = express();
@@ -20,6 +21,40 @@ const origin = process.env.APP_ORIGIN;
 const originPort = process.env.APP_ORIGIN_PORT;
 const port = process.env.APP_PORT;
 const uploadsFolder = process.env.UPLOADS_FOLDER;
+
+const days = ["Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"];
+const mons = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+const handleInboxRequest = (req, res) => {
+  let page = req.params.pageId ? parseInt(req.params.pageId) : 0;
+
+  const inboxItems = transactions.filter((transaction) => {
+    if (!transaction.envelope) {
+      return true;
+    }
+    return false;
+  });
+
+  res.send({
+    page: page,
+    more: false,
+    errorState: {},
+    transactions: inboxItems,
+  });
+};
 
 app.use(
   fileUpload({
@@ -169,8 +204,16 @@ app.get("/api/profile", checkJwt, (req, res) => {
   const authHeader = req.headers.authorization;
   const token = authHeader.split(" ")[1];
   const tokenData = parseJwt(token);
-  //console.log(tokenData);
-  res.json({ sub: tokenData.sub, ...user });
+
+  const etagFlag = app.get("etag");
+  if (req.headers.aktualisierung) {
+    app.set("etag", false);
+  }
+
+  res.json(user);
+  if (req.headers.aktualisierung) {
+    app.set("etag", etagFlag);
+  }
 });
 
 app.post("/api/profile", checkJwt, (req, res) => {
@@ -233,20 +276,13 @@ app.get("/api/transactions", checkJwt, (req, res) => {
 });
 
 app.get("/api/transactions/inbox/:pageId", checkJwt, (req, res) => {
-  let page = req.params.pageId ? parseInt(req.params.pageId) : 0;
-
-  res.send({
-    page: page,
-    more: false,
-    errorState: {},
-    transactions: transactions,
-  });
+  handleInboxRequest(req, res);
 });
 
 app.post("/api/transactions/upload", checkJwt, async (req, res) => {
   try {
     if (!req.files) {
-      console.log("no files");
+      console.error("no files");
       res.send({
         status: false,
         responseState: { msg: "No file uploaded" },
@@ -256,10 +292,11 @@ app.post("/api/transactions/upload", checkJwt, async (req, res) => {
       let csvFile = req.files.csv;
       let accountJson = req.body.account;
       let account = JSON.parse(accountJson);
-      //console.log(csvFile.name);
       //Use the mv() method to place the file in upload directory (i.e. "uploads")
+      const uuid = parseJwt(req.headers.authorization).sub;
       const fileRandomizer = Math.random() * Number.MAX_VALUE;
-      const fileName = md5(fileRandomizer + csvFile.name);
+      const preAuthFileName = md5(fileRandomizer + csvFile.name);
+      const fileName = md5(preAuthFileName + uuid);
       await csvFile.mv(uploadsFolder + fileName);
 
       const jsonArray = await csv({
@@ -268,15 +305,14 @@ app.post("/api/transactions/upload", checkJwt, async (req, res) => {
 
       const sampleData = jsonArray.slice(0, 10);
       const mapping = await getMapping(sampleData);
-      console.log(mapping);
 
-      //console.log("after move; sending response");
       //send response
       res.send({
         status: true,
         responseState: { msg: "File is uploaded" },
         data: {
-          key: fileName,
+          key: preAuthFileName,
+          account: account,
           mimetype: csvFile.mimetype,
           size: csvFile.size,
           items: sampleData,
@@ -290,13 +326,101 @@ app.post("/api/transactions/upload", checkJwt, async (req, res) => {
   }
 });
 
-app.get("/api/external", checkJwt, (req, res) => {
-  const data = parseJwt(req.headers.authorization);
+const createTransaction = (record, accountTitle, map) => {
+  const keys = Object.keys(record);
+  const recordDate = new Date(record[keys[map.date]]);
+  const dow = days[recordDate.getDay()];
+  const month = mons[recordDate.getMonth()];
+  const year = recordDate.getFullYear();
+  const day = recordDate.getDate();
+  const curYear = new Date().getFullYear();
 
-  res.send({
-    msg: `Your Access Token was successfully validated! - ${data.sub}`,
+  const result = {
+    date:
+      dow + ", " + month + " " + day + (year !== curYear ? ", " + year : ""),
+    amount: record[keys[map.amount]],
+    type: record[keys[map.type]],
+    description: record[keys[map.description]],
+    account: accountTitle,
+  };
+
+  return result;
+};
+
+app.post("/api/transactions/import", checkJwt, async (req, res) => {
+  const { key, account, map, startingRow } = req.body;
+  // use key + user.sub to make filename
+  // check if file exists
+  // get internal account balance by account id
+  // generate batch id - may do this later
+  // loop to create new transactions from file
+  //   set account on each record
+  //   update local balance variable
+
+  const uuid = parseJwt(req.headers.authorization).sub;
+  const fileName = md5(key + uuid);
+  if (!fs.existsSync(uploadsFolder + fileName)) {
+    res.status(404).json({ message: "key not found" }).send();
+    return;
+  }
+
+  let liveMap = {};
+  map.map((value, index) => {
+    if (value === "DATE") {
+      liveMap.date = index;
+    } else if (value === "AMOUNT") {
+      liveMap.amount = index;
+    } else if (value === "TYPE") {
+      liveMap.type = index;
+    } else if (value === "DESCRIPTION") {
+      liveMap.description = index;
+    }
   });
+
+  const liveAccount = user.accounts.reduce((result, current) => {
+    if (current.id === account.id) {
+      result = current;
+    }
+    return result;
+  });
+
+  let workingTitle = liveAccount.title;
+  let workingBalance = parseFloat(liveAccount.detail[0].amount);
+
+  try {
+    // async process
+    const op = await csv({ noheader: true })
+      .fromFile(uploadsFolder + fileName)
+      .subscribe((json, lineNumber) => {
+        if (startingRow <= lineNumber) {
+          return new Promise((resolve, reject) => {
+            const newTransaction = createTransaction(
+              json,
+              workingTitle,
+              liveMap
+            );
+            workingBalance = workingBalance + parseFloat(newTransaction.amount);
+            transactions = [...transactions, newTransaction];
+            resolve();
+          });
+        }
+      });
+  } catch (err) {
+    console.error(err);
+  }
+
+  liveAccount.detail[0].amount = workingBalance;
+
+  handleInboxRequest(req, res);
 });
+
+// app.get("/api/external", checkJwt, (req, res) => {
+//   const data = parseJwt(req.headers.authorization);
+
+//   res.send({
+//     msg: `Your Access Token was successfully validated! - ${data.sub}`,
+//   });
+// });
 
 app.get("/api/timestamp", (req, res) => {
   res.send({

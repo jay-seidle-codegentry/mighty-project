@@ -6,6 +6,7 @@ const host =
 const transactions = "/api/transactions";
 const inbox = transactions + "/inbox";
 const upload = transactions + "/upload";
+const importT = transactions + "/import";
 
 export const getTransactions = async (params) => {
   const { page } = params;
@@ -26,5 +27,10 @@ export const uploadTransactions = async (params) => {
   const responseData = await fetchIt(host + upload, params);
   return responseData;
 };
+
+export const importStoredTransactions = async (params) => {
+  const responseData = await fetchIt(host + importT, params);
+  return responseData;
+}
 
 export default getTransactions;
