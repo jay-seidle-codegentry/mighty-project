@@ -109,7 +109,7 @@ const en = {
       ],
       Question: "Do you want to remove {title}?",
     },
-    RemoveEnvelop: {
+    RemoveEnvelope: {
       Title: "Removing an Envelope!",
       Body: [
         "You will no longer be able to assign to this envelope.",

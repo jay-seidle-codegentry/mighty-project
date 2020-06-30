@@ -274,6 +274,22 @@ app.post("/api/account/remove", checkJwt, (req, res) => {
   res.json(user);
 });
 
+app.post("/api/envelope/remove", checkJwt, (req, res) => {
+  const key = req.body.id;
+  let msg = "envelope not found; nothing removed";
+  const envelopeList = user.envelopes.filter(function (envelope) {
+    if (envelope.id == key) {
+      msg = "envelope removed successfully";
+      return false;
+    }
+    return true;
+  });
+
+  user.envelopes = envelopeList;
+  user.responseState = { msg: msg };
+  res.json(user);
+});
+
 app.get("/api/transactions", checkJwt, (req, res) => {
   console.log(req.headers.page);
 

@@ -6,6 +6,7 @@ const host =
 const profile = "/api/profile";
 const accountRemove = "/api/account/remove";
 const accountSave = "/api/account/save";
+const envelopeRemove = "/api/envelope/remove";
 
 export const getProfile = async (params) => {
   const responseData = await fetchIt(host + profile, params);
@@ -25,6 +26,11 @@ export const removeAccount = async (params) => {
 export const saveAccount = async (params) => {
   const responseData = await fetchIt(host + accountSave, params);
   return responseData;
-}
+};
+
+export const removeEnvelope = async (params) => {
+  const responseData = await fetchIt(host + envelopeRemove, params);
+  return responseData;
+};
 
 export default getProfile;

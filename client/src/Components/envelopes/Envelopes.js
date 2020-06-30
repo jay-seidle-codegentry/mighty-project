@@ -3,8 +3,10 @@ import Typography from "@material-ui/core/Typography";
 import { Grid, IconButton } from "@material-ui/core";
 import DraftsIcon from "@material-ui/icons/Drafts";
 import AddIcon from "@material-ui/icons/Add";
+import RemoveModal from "../core/Remove.modal";
 import { LanguageContext } from "../../Components/locale/LanguageProvider";
 import { ProfileContext } from "../../Components/Profile/ProfileProvider";
+import { removeEnvelope } from "../../usecases/profile-api.usecase";
 import {
   ExpansionPanel,
   ExpansionPanelSummary,
@@ -17,10 +19,6 @@ function change(event) {
   alert(event + " button clicked");
 }
 
-function remove(event) {
-  alert(event + " button clicked");
-}
-
 function showTransactions(event) {
   alert(event + " show transactions clicked");
 }
@@ -28,7 +26,6 @@ function showTransactions(event) {
 const handlers = {
   showIconHandler: showTransactions,
   changeIconHandler: change,
-  removeIconHandler: remove,
 };
 
 export const Envelopes = (props) => {
@@ -38,9 +35,23 @@ export const Envelopes = (props) => {
   const classes = useStyles();
 
   const [expanded, setExpanded] = useState(false);
+  const [removeItem, setRemoveItem] = useState(null);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+  };
+
+  const removeClicked = (envelope) => {
+    setRemoveItem(envelope);
+  };
+
+  const yesRemove = (envelope) => {
+    profileContext.setProfile(removeEnvelope, { body: { id: envelope.id } });
+    setRemoveItem(null);
+  };
+
+  const noRemove = (envelope) => {
+    setRemoveItem(null);
   };
 
   const buildEnvelopeCard = (handlers, envelope, index) => {
@@ -49,53 +60,68 @@ export const Envelopes = (props) => {
         key={index}
         expanded={expanded === "panel" + index}
         onChange={handleChange("panel" + index)}
-        id={"panel" + index}
+        id={envelope}
         title={envelope.title}
         detail={envelope.detail}
         transactionHandler={handlers.showIconHandler}
         changeHandler={handlers.changeIconHandler}
-        removeHandler={handlers.removeIconHandler}
+        removeHandler={removeClicked}
       />
     );
   };
 
   return (
-    <ExpansionPanel square expanded={props.expanded} onChange={props.onChange}>
-      <ExpansionPanelSummary
-        aria-controls="accounts-content"
-        id="accounts-header"
+    <>
+      <ExpansionPanel
+        square
+        expanded={props.expanded}
+        onChange={props.onChange}
       >
-        <Typography className={classes.top} component="div">
-          <Grid container>
-            <Grid item sm={1} xs={2}>
-              <DraftsIcon className={classes.floatIcon} fontSize="large" />{" "}
+        <ExpansionPanelSummary
+          aria-controls="accounts-content"
+          id="accounts-header"
+        >
+          <Typography className={classes.top} component="div">
+            <Grid container>
+              <Grid item sm={1} xs={2}>
+                <DraftsIcon className={classes.floatIcon} fontSize="large" />{" "}
+              </Grid>
+              <Grid className={classes.title} item xs={8} sm={10}>
+                {T.Panels.Envelopes}
+              </Grid>
+              <Grid item container xs={1}>
+                <IconButton
+                  className={classes.buttons}
+                  disableFocusRipple={true}
+                  disableRipple={true}
+                >
+                  <AddIcon className={classes.action} fontSize="large" />
+                </IconButton>
+              </Grid>
             </Grid>
-            <Grid className={classes.title} item xs={8} sm={10}>
-              {T.Panels.Envelopes}
-            </Grid>
-            <Grid item container xs={1}>
-              <IconButton
-                className={classes.buttons}
-                disableFocusRipple={true}
-                disableRipple={true}
-              >
-                <AddIcon className={classes.action} fontSize="large" />
-              </IconButton>
-            </Grid>
-          </Grid>
-        </Typography>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails>
-        <div className={classes.top}>
-          {envelopes.length === 0 && (
-            <Typography>{T.Envelopes.NoEnvelopes}</Typography>
-          )}
-          {envelopes.map((envelope, index) => {
-            return buildEnvelopeCard(handlers, envelope, index);
-          })}
-        </div>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+          </Typography>
+        </ExpansionPanelSummary>
+        <ExpansionPanelDetails>
+          <div className={classes.top}>
+            {envelopes.length === 0 && (
+              <Typography>{T.Envelopes.NoEnvelopes}</Typography>
+            )}
+            {envelopes.map((envelope, index) => {
+              return buildEnvelopeCard(handlers, envelope, index);
+            })}
+          </div>
+        </ExpansionPanelDetails>
+      </ExpansionPanel>
+      {removeItem && (
+        <RemoveModal
+          envelopeModal
+          open={removeItem != null}
+          item={removeItem}
+          yesHandler={yesRemove}
+          noHandler={noRemove}
+        />
+      )}
+    </>
   );
 };
 
