@@ -72,24 +72,27 @@ app.use(hpp());
 
 let transactions = [
   {
+    id: "5efa62d081bc407e2e59d82a",
     amount: "-105.97",
     date: "Mon, December 17",
     description: "VERIZON ONLINE PMT",
-    account: "Checking",
+    account: { id: "5ed3b507f717db58968b7a34", title: "Checking Account" },
     type: "purchase",
   },
   {
+    id: "5efa62d081bc407e2e59d82b",
     amount: "10294.97",
     date: "Mon, December 17",
     description: "U-TRADE Direct Deposit",
-    account: "Checking",
+    account: { id: "5ed3b507f717db58968b7a34", title: "Checking Account" },
     type: "deposit",
   },
   {
+    id: "5efa62d081bc407e2e59d82c",
     amount: "-225.47",
     date: "Mon, December 25",
     description: "Joe's Meat Farm - Roast Beef",
-    account: "Checking",
+    account: { id: "5ed3b507f717db58968b7a34", title: "Checking Account" },
     type: "purchase",
   },
 ];
@@ -168,6 +171,7 @@ let user = {
       ],
     },
     {
+      id: "5ed3b4adeac42f78ecbdbbfa",
       title: "Movies",
       detail: [
         {
@@ -183,6 +187,7 @@ let user = {
       ],
     },
     {
+      id: "5ed3b4adeac42f78ecbdbbfb",
       title: "Emergency Fund",
       detail: [
         {
@@ -326,7 +331,7 @@ app.post("/api/transactions/upload", checkJwt, async (req, res) => {
   }
 });
 
-const createTransaction = (record, accountTitle, map) => {
+const createTransaction = (record, accountId, accountTitle, map) => {
   const keys = Object.keys(record);
   const recordDate = new Date(record[keys[map.date]]);
   const dow = days[recordDate.getDay()];
@@ -336,12 +341,13 @@ const createTransaction = (record, accountTitle, map) => {
   const curYear = new Date().getFullYear();
 
   const result = {
+    id: ((Math.random() * Number.MAX_SAFE_INTEGER).toFixed(0) + 1).toString(),
     date:
       dow + ", " + month + " " + day + (year !== curYear ? ", " + year : ""),
     amount: record[keys[map.amount]],
     type: record[keys[map.type]],
     description: record[keys[map.description]],
-    account: accountTitle,
+    account: { id: accountId, title: accountTitle },
   };
 
   return result;
@@ -384,8 +390,9 @@ app.post("/api/transactions/import", checkJwt, async (req, res) => {
     return result;
   });
 
-  let workingTitle = liveAccount.title;
-  let workingBalance = parseFloat(liveAccount.detail[0].amount);
+  let workingAccountId = liveAccount.id;
+  let workingAccountTitle = liveAccount.title;
+  let workingAccountBalance = parseFloat(liveAccount.detail[0].amount);
 
   try {
     // async process
@@ -396,10 +403,12 @@ app.post("/api/transactions/import", checkJwt, async (req, res) => {
           return new Promise((resolve, reject) => {
             const newTransaction = createTransaction(
               json,
-              workingTitle,
+              workingAccountId,
+              workingAccountTitle,
               liveMap
             );
-            workingBalance = workingBalance + parseFloat(newTransaction.amount);
+            workingAccountBalance =
+              workingAccountBalance + parseFloat(newTransaction.amount);
             transactions = [...transactions, newTransaction];
             resolve();
           });
@@ -409,9 +418,79 @@ app.post("/api/transactions/import", checkJwt, async (req, res) => {
     console.error(err);
   }
 
-  liveAccount.detail[0].amount = workingBalance;
+  liveAccount.detail[0].amount = workingAccountBalance;
 
   handleInboxRequest(req, res);
+});
+
+app.post("/api/transactions/assign", checkJwt, (req, res) => {
+  const { transactionId, envelopeId } = req.body;
+
+  // get live record indexes
+  const transactionIndex = transactions.findIndex(
+    (t) => t.id === transactionId
+  );
+  const envelopeIndex = user.envelopes.findIndex((e) => e.id === envelopeId);
+  const accountIdFromTransaction = transactions[transactionIndex].account.id;
+  const accountIndex = user.accounts.findIndex(
+    (a) => a.id === accountIdFromTransaction
+  );
+
+  // send not founds
+  console.log(transactionIndex);
+  console.log(envelopeIndex);
+  console.log(accountIndex);
+  if (transactionIndex < 0 || envelopeIndex < 0 || accountIndex < 0) {
+    let responseCode = transactionIndex < 0 ? "FF" : "";
+    responseCode = responseCode + (envelopeIndex < 0 ? "AA" : "");
+    responseCode = responseCode + (accountIndex < 0 ? "99" : "");
+    res
+      .status(400)
+      .json({ message: "record(s) not found", code: responseCode });
+    return;
+  }
+
+  // add envelope to transaction
+  const liveEnvelope = user.envelopes[envelopeIndex];
+  const liveEnvelopeId = liveEnvelope.id;
+  const liveEnvelopeTitle = liveEnvelope.title;
+  transactions[transactionIndex].envelope = {
+    id: liveEnvelopeId,
+    title: liveEnvelopeTitle,
+  };
+
+  // adjust envelope balance
+  const liveAccountId = user.accounts[accountIndex].id;
+  const liveAccountTitle = user.accounts[accountIndex].title;
+  const liveTransactionAmount = parseFloat(
+    transactions[transactionIndex].amount
+  );
+  const envelopeDetailIndex = liveEnvelope.detail.findIndex(
+    (e) => e.id === liveAccountId
+  );
+
+  if (envelopeDetailIndex === -1) {
+    liveEnvelope.detail.push({
+      id: liveAccountId,
+      name: liveAccountTitle,
+      amount: (0 + liveTransactionAmount).toString(),
+    });
+  } else {
+    const liveEnvelopeAccountAmount = parseFloat(
+      user.envelopes[envelopeIndex].detail[envelopeDetailIndex].amount
+    );
+    const newAmount = liveEnvelopeAccountAmount + liveTransactionAmount;
+    // no need to update envelope account id (it exists)
+    // updating name incase it may have changed; transactions display by id not by name
+    user.envelopes[envelopeIndex].detail[
+      envelopeDetailIndex
+    ].name = liveAccountTitle;
+    user.envelopes[envelopeIndex].detail[
+      envelopeDetailIndex
+    ].amount = newAmount;
+  }
+
+  res.json(transactions[transactionIndex]);
 });
 
 // app.get("/api/external", checkJwt, (req, res) => {

@@ -37,7 +37,7 @@ const useStyles = makeStyles({
 export const ImportVerification = (props) => {
   const { closeHandler } = props;
   const { stagedTransactionInfo } = useContext(TransactionContext).provider;
-  const { importTransactions } = useContext(TransactionContext);
+  const { executeNonStateUsecase } = useContext(TransactionContext);
 
   let mappedFields = [];
   Object.keys(stagedTransactionInfo.data.items[0]).map((key, index) => {
@@ -69,7 +69,7 @@ export const ImportVerification = (props) => {
         startingRow: firstRowWithData,
       },
     };
-    await importTransactions(importStoredTransactions, params);
+    await executeNonStateUsecase(importStoredTransactions, params);
     if (closeHandler) closeHandler();
   };
 

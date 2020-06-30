@@ -43,7 +43,7 @@ export const TransactionProvider = (props) => {
     try {
       const token = await getTokenSilently();
       const response = await retrieveTransactions({ token: token, ...params });
-
+console.log(response);
       setErrorState(
         response.error ? response.error : initialContext.errorState
       );
@@ -61,7 +61,7 @@ export const TransactionProvider = (props) => {
     setLoading(false);
   };
 
-  const importTransactionalContext = async (retrieveTransactions, params) => {
+  const executeTransactionalUsecase = async (retrieveTransactions, params) => {
     // Setting no state here;  relying on profile update to refresh when account balance is set
     try {
       const token = await getTokenSilently();
@@ -132,13 +132,13 @@ export const TransactionProvider = (props) => {
     setStagedTransactionInfo(null);
   };
 
-  const importTransactions = async (transactionUsecase, params) => {
-    await importTransactionalContext(transactionUsecase, params);
+  const executeNonStateUsecase = async (transactionUsecase, params) => {
+    await executeTransactionalUsecase(transactionUsecase, params);
   };
 
   return (
     <TransactionContext.Provider
-      value={{ provider, importTransactions, setUploadTransactions, clearStagedTransactions }}
+      value={{ provider, executeNonStateUsecase, setUploadTransactions, clearStagedTransactions }}
     >
       {props.children}
     </TransactionContext.Provider>

@@ -13,11 +13,12 @@ import {
   ExpansionPanelDetails,
   useStyles,
 } from "../core/ExpansionPanels";
-import { uploadTransactions } from "../../usecases/transactions_api.usecase";
+import { uploadTransactions, assignEnvelopeToTransaction } from "../../usecases/transactions_api.usecase";
 import Dialoger from "../core/Dialoger";
 import { AccountSelector } from "../accounts/AccountSelector";
 import { ProfileContext } from "../Profile/ProfileProvider";
 import { getProfile } from "../../usecases/profile-api.usecase";
+import { EnvelopeSelector } from "../envelopes/EnvelopeSelector";
 
 export const Inbox = (props) => {
   const provider = useContext(ProfileContext);
@@ -29,13 +30,11 @@ export const Inbox = (props) => {
   const { transactions, stagedTransactionInfo } = useContext(
     TransactionContext
   ).provider;
+  const { executeNonStateUsecase } = useContext(TransactionContext);
+
   const classes = useStyles();
 
   const { expanded, onChange } = props;
-
-  const assign = (event) => {
-    alert("assign transaction from " + event);
-  };
 
   const buildInboxCard = (transaction, index) => {
     let showDark = !Boolean(index % 2);
@@ -43,13 +42,9 @@ export const Inbox = (props) => {
       <InboxCard
         id={"ic_" + index}
         key={index}
-        amount={transaction.amount}
-        date={transaction.date}
-        description={transaction.description}
+        transaction={transaction}
         dark={showDark}
-        account={transaction.account}
-        type={transaction.type}
-        assignHandler={assign}
+        assignHandler={showAssign}
       />
     );
   };
@@ -60,6 +55,7 @@ export const Inbox = (props) => {
 
   const [showAccountSelector, setShowAccountSelector] = useState(false);
 
+  const activeTransaction = useRef();
   const [uiState, setUiState] = useState(0);
 
   useEffect(() => {
@@ -82,6 +78,35 @@ export const Inbox = (props) => {
     if (uiState === 1) {
       setUiState(0);
     }
+  };
+
+  const [showAssignItem, setShowAssignItem] = useState(false);
+  const showAssign = (transaction) => {
+    activeTransaction.current = transaction;
+    setShowAssignItem(true);
+  };
+
+  const envelopeAssigned = async (result) => {
+    const {canceled, envelope, message} = result;
+    setShowAssignItem(false);
+    if (canceled) {
+      console.log(message);
+    } else {
+      console.log(activeTransaction.current);
+      console.log(envelope);
+      const params = {
+        body: {
+          transactionId: activeTransaction.current.id,
+          envelopeId: envelope.id,
+        },
+      };
+      await executeNonStateUsecase(assignEnvelopeToTransaction, params);
+      provider.setProfile(getProfile, { headers: { aktualisierung: true } });
+    }
+  };
+
+  const dialogerEnvelopeCloseHandler = () => {
+    setShowAccountSelector(false);
   };
 
   const accountSelected = (result) => {
@@ -108,7 +133,7 @@ export const Inbox = (props) => {
     if (uiState === 3) {
       clearStagedTransactions();
       setUiState(0);
-      provider.setProfile(getProfile, {headers: {aktualisierung : true}});
+      provider.setProfile(getProfile, { headers: { aktualisierung: true } });
     }
   };
 
@@ -171,6 +196,14 @@ export const Inbox = (props) => {
           closeHandler={dialogerImportCloseHandler}
         >
           <ImportVerification closeHandler={dialogerImportCloseHandler} />
+        </Dialoger>
+      )}
+      {showAssignItem && (
+        <Dialoger
+          open={showAssignItem}
+          closeHandler={dialogerEnvelopeCloseHandler}
+        >
+          <EnvelopeSelector envelopeSelectedHandler={envelopeAssigned} />
         </Dialoger>
       )}
     </>

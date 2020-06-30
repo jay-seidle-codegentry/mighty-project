@@ -38,22 +38,19 @@ const TransactionIcon = (type, style) => {
 
 export default function InboxCard(props) {
   const {
-    amount,
-    date,
-    description,
-    account,
-    type,
+    transaction,
     assignHandler,
     dark,
-    id,
   } = props;
 
-  const onButtonClick = () => {
-    assignHandler(id);
+  const onAssignClick = () => {
+    assignHandler(transaction);
   };
 
   const classes = useStyles();
   const cardStyle = dark ? classes.dark : classes.light;
+
+  const {date, amount, type, description, account} = transaction;
 
   return (
     <Grid container spacing={1} direction="column">
@@ -81,10 +78,10 @@ export default function InboxCard(props) {
           xs={7}
         >
           <Grid className={classes.bigger}>{description}</Grid>
-          <Grid>{account}</Grid>
+          <Grid>{account.title}</Grid>
         </Grid>
         <Grid item xs={1}>
-          <IconButton className={classes.assignButton} onClick={onButtonClick}>
+          <IconButton className={classes.assignButton} onClick={onAssignClick}>
             <PostAddIcon className={classes.icon} />
           </IconButton>
         </Grid>

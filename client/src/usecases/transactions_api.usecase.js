@@ -7,6 +7,7 @@ const transactions = "/api/transactions";
 const inbox = transactions + "/inbox";
 const upload = transactions + "/upload";
 const importT = transactions + "/import";
+const assign = transactions + "/assign";
 
 export const getTransactions = async (params) => {
   const { page } = params;
@@ -31,6 +32,11 @@ export const uploadTransactions = async (params) => {
 export const importStoredTransactions = async (params) => {
   const responseData = await fetchIt(host + importT, params);
   return responseData;
-}
+};
+
+export const assignEnvelopeToTransaction = async (params) => {
+  const responseData = await fetchIt(host + assign, params);
+  return responseData;
+};
 
 export default getTransactions;

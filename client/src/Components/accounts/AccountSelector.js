@@ -22,7 +22,7 @@ const buildAccountSelectorButton = (account, index, handler) => {
 
 export const AccountSelector = (props) => {
   const { accountSelectedHandler } = props;
-  const { Title, SelectedMessage } = useContext(
+  const { Title, SelectedMessage, SelectOneLabel } = useContext(
     LanguageContext
   ).dictionary.Account.Selector;
   const accounts = useContext(ProfileContext).accounts;
@@ -45,7 +45,7 @@ export const AccountSelector = (props) => {
     >
       <Typography style={{ textAlign: "center" }} component="div">
         <Typography variant="h3">{Title}</Typography>
-        <Typography style={{ textAlign: "left" }}>Select One:</Typography>
+        <Typography style={{ textAlign: "left" }}>{SelectOneLabel}</Typography>
         <List component="nav" aria-label="select account to receive upload">
           {accounts.map((account, index) => {
             return buildAccountSelectorButton(account, index, () =>

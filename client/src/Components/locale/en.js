@@ -69,6 +69,25 @@ const en = {
       Title: "Upload Account?",
       CanceledMessage: "Canceled.",
       SelectedMessage: "Account Selected",
+      SelectOneLabel: "Select One:",
+    },
+  },
+  Envelope: {
+    Editor: {
+      EditTitle: "Update Envelope",
+      NewTitle: "Add Envelope",
+      NameLabel: "Envelope Name",
+      StartingAmountLabel: "Starting Balance",
+      CancelLabel: "Cancel",
+      SaveLabel: "Save",
+      SavedMessage: "Envelope Saved!",
+      CanceledMessage: "Canceled.",
+    },
+    Selector: {
+      Title: "Select Envelope",
+      CanceledMessage: "Canceled.",
+      SelectedMessage: "Envelope Selected",
+      SelectOneLabel: "Select One:",
     },
   },
   Dialogs: {
