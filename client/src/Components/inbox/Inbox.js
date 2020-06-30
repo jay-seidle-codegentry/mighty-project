@@ -13,7 +13,10 @@ import {
   ExpansionPanelDetails,
   useStyles,
 } from "../core/ExpansionPanels";
-import { uploadTransactions, assignEnvelopeToTransaction } from "../../usecases/transactions_api.usecase";
+import {
+  uploadTransactions,
+  assignEnvelopeToTransaction,
+} from "../../usecases/transactions_api.usecase";
 import Dialoger from "../core/Dialoger";
 import { AccountSelector } from "../accounts/AccountSelector";
 import { ProfileContext } from "../Profile/ProfileProvider";
@@ -87,7 +90,7 @@ export const Inbox = (props) => {
   };
 
   const envelopeAssigned = async (result) => {
-    const {canceled, envelope, message} = result;
+    const { canceled, envelope, message } = result;
     setShowAssignItem(false);
     if (canceled) {
       console.log(message);
@@ -175,6 +178,9 @@ export const Inbox = (props) => {
         <ExpansionPanelDetails>
           <div className={classes.root}>
             <Typography component="div">
+              {transactions.length === 0 && (
+                <Typography>{T.Inbox.NoItems}</Typography>
+              )}
               {transactions.map((transaction, index) => {
                 return buildInboxCard(transaction, index);
               })}

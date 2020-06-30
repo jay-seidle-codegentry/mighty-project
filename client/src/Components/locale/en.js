@@ -51,8 +51,14 @@ const en = {
     Envelopes: "Envelopes",
     Accounts: "Accounts",
   },
+  Inbox: {
+    NoItems: "Your Inbox is Empty",
+  },
+  Envelopes: {
+    NoEnvelopes: "Create an envelope by clicking the plus icon",
+  },
   Accounts: {
-    NoAccounts: "You have no accounts.",
+    NoAccounts: "Create an account by clicking the plus icon",
   },
   Account: {
     Editor: {

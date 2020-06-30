@@ -87,6 +87,9 @@ export const Envelopes = (props) => {
       </ExpansionPanelSummary>
       <ExpansionPanelDetails>
         <div className={classes.top}>
+          {envelopes.length === 0 && (
+            <Typography>{T.Envelopes.NoEnvelopes}</Typography>
+          )}
           {envelopes.map((envelope, index) => {
             return buildEnvelopeCard(handlers, envelope, index);
           })}
