@@ -70,22 +70,22 @@ export const AccountEditor = (props) => {
     setNewBalance(event.target.value);
   };
 
-  const cancelIt = (event) => {
+  const cancelIt = () => {
     closeHandler({
       canceled: true,
       message: CanceledMessage,
     });
   };
 
-  const saveIt = (event) => {
+  const saveIt = () => {
     const body = {};
     if (id) body.id = id;
     if (newAccountName) body.title = newAccountName;
-    if (newBalance) {
+    if (newBalance && !isEditing) {
       body.detail = [
         {
           name: body.title,
-          amount: newBalance,
+          amount: newBalance ? newBalance : "0",
         },
       ];
     }

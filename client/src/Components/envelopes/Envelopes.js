@@ -4,6 +4,8 @@ import { Grid, IconButton } from "@material-ui/core";
 import DraftsIcon from "@material-ui/icons/Drafts";
 import AddIcon from "@material-ui/icons/Add";
 import RemoveModal from "../core/Remove.modal";
+import Dialoger from "../core/Dialoger";
+import { EnvelopeEditor } from "./EnvelopeEditor";
 import { LanguageContext } from "../../Components/locale/LanguageProvider";
 import { ProfileContext } from "../../Components/Profile/ProfileProvider";
 import { removeEnvelope } from "../../usecases/profile-api.usecase";
@@ -15,18 +17,9 @@ import {
 } from "../core/ExpansionPanels";
 import { SummationPanel } from "../core";
 
-function change(event) {
-  alert(event + " button clicked");
-}
-
 function showTransactions(event) {
   alert(event + " show transactions clicked");
 }
-
-const handlers = {
-  showIconHandler: showTransactions,
-  changeIconHandler: change,
-};
 
 export const Envelopes = (props) => {
   const T = useContext(LanguageContext).dictionary;
@@ -36,9 +29,18 @@ export const Envelopes = (props) => {
 
   const [expanded, setExpanded] = useState(false);
   const [removeItem, setRemoveItem] = useState(null);
+  const [changeItem, setChangeItem] = useState(null);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
+  };
+
+  const changeClicked = (envelope) => {
+    setChangeItem(envelope);
+  };
+
+  const changeClosed = (payload) => {
+    setChangeItem(false);
   };
 
   const removeClicked = (envelope) => {
@@ -54,7 +56,12 @@ export const Envelopes = (props) => {
     setRemoveItem(null);
   };
 
-  const buildEnvelopeCard = (handlers, envelope, index) => {
+  const triggerAddEnvelope = (event) => {
+    event.stopPropagation();
+    setChangeItem({});
+  };
+
+const buildEnvelopeCard = (envelope, index) => {
     return (
       <SummationPanel
         key={index}
@@ -63,8 +70,8 @@ export const Envelopes = (props) => {
         id={envelope}
         title={envelope.title}
         detail={envelope.detail}
-        transactionHandler={handlers.showIconHandler}
-        changeHandler={handlers.changeIconHandler}
+        transactionHandler={showTransactions}
+        changeHandler={changeClicked}
         removeHandler={removeClicked}
       />
     );
@@ -94,6 +101,7 @@ export const Envelopes = (props) => {
                   className={classes.buttons}
                   disableFocusRipple={true}
                   disableRipple={true}
+                  onClick={triggerAddEnvelope}
                 >
                   <AddIcon className={classes.action} fontSize="large" />
                 </IconButton>
@@ -107,7 +115,7 @@ export const Envelopes = (props) => {
               <Typography>{T.Envelopes.NoEnvelopes}</Typography>
             )}
             {envelopes.map((envelope, index) => {
-              return buildEnvelopeCard(handlers, envelope, index);
+              return buildEnvelopeCard(envelope, index);
             })}
           </div>
         </ExpansionPanelDetails>
@@ -120,6 +128,11 @@ export const Envelopes = (props) => {
           yesHandler={yesRemove}
           noHandler={noRemove}
         />
+      )}
+      {changeItem && (
+        <Dialoger open={changeItem != null}>
+          <EnvelopeEditor envelope={changeItem} closeHandler={changeClosed} />
+        </Dialoger>
       )}
     </>
   );

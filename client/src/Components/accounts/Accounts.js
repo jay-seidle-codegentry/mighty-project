@@ -8,7 +8,7 @@ import { ProfileContext } from "../../Components/Profile/ProfileProvider";
 import { removeAccount } from "../../usecases/profile-api.usecase";
 import RemoveModal from "../core/Remove.modal";
 import Dialoger from "../core/Dialoger";
-import { AccountEditor } from "../accounts/AccountEditor";
+import { AccountEditor } from "./AccountEditor";
 import {
   ExpansionPanel,
   ExpansionPanelSummary,

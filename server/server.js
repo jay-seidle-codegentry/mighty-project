@@ -274,6 +274,32 @@ app.post("/api/account/remove", checkJwt, (req, res) => {
   res.json(user);
 });
 
+app.post("/api/envelope/save", checkJwt, (req, res) => {
+  const { id, title } = req.body;
+  let msg = "envelope not found; nothing updated";
+
+  if (id) {
+    const envelopeList = user.envelopes.filter(function (envelope) {
+      if (envelope.id == id) {
+        if (title) {
+          envelope.title = title;
+          msg = "envelope updated successfully";
+        }
+      }
+      return true;
+    });
+
+    user.envelopes = envelopeList;
+  } else {
+    msg = "envelope added successfully";
+    req.body.id = (Math.random() * Number.MAX_SAFE_INTEGER + 1).toString();
+    req.body.detail = [];
+    user.envelopes.push(req.body);
+  }
+  user.responseState = { msg: msg };
+  res.json(user);
+});
+
 app.post("/api/envelope/remove", checkJwt, (req, res) => {
   const key = req.body.id;
   let msg = "envelope not found; nothing removed";

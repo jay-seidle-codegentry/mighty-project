@@ -7,6 +7,7 @@ const profile = "/api/profile";
 const accountRemove = "/api/account/remove";
 const accountSave = "/api/account/save";
 const envelopeRemove = "/api/envelope/remove";
+const envelopeSave = "/api/envelope/save";
 
 export const getProfile = async (params) => {
   const responseData = await fetchIt(host + profile, params);
@@ -30,6 +31,11 @@ export const saveAccount = async (params) => {
 
 export const removeEnvelope = async (params) => {
   const responseData = await fetchIt(host + envelopeRemove, params);
+  return responseData;
+};
+
+export const saveEnvelope = async (params) => {
+  const responseData = await fetchIt(host + envelopeSave, params);
   return responseData;
 };
 

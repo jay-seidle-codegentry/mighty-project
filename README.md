@@ -28,6 +28,7 @@ So, I've done some debating... I am going to start with an app that does 'envelo
 1. Backend Profile Service - is stubbed out. The GET returns 'user not found' json object and the POST updates it.  It is not storing the info
 1. Backend for getting Inbox items (transactions with no envelope set) is stubbed out
 1. Backend for Add, Update and Remove accounts is stubbed out
+1. Backend for Add, Update and Remove envelopes is stubbed out
 1. Backend for uploading csv and returning confirmation info stubbed out
 1. Backend for importing uploaded csv post confirmation stubbed out
 
@@ -42,6 +43,7 @@ So, I've done some debating... I am going to start with an app that does 'envelo
 1. Post login, if new user is detected, it takes you to Edit Profile
 1. Home View - support getting accounts, envelopes and inbox transactions
 1. Home View | Accounts - supports add, edit and remove
+1. Home View | Envelopes - supports add, edit and remove
 1. Home View | Inbox - supports upload csv file of transactions, confirm dialog for data starting row and column assignments; transactions adjust selected account balance as well
 
 ## Setup Client
@@ -159,3 +161,6 @@ https://stackoverflow.com/questions/18391212/is-it-not-possible-to-stringify-an-
 
 Securing my express api
 https://www.freecodecamp.org/news/express-js-security-tips/
+
+Optimizing your app
+https://www.codementor.io/blog/react-optimization-5wiwjnf9hj

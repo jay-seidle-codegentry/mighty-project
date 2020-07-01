@@ -8,6 +8,7 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 const sumTotal = (detail) => {
   let total = 0;
   detail.forEach((element) => {
+    console.log(element);
     total = total + parseFloat(element.amount);
   });
   return total;
