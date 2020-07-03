@@ -30,11 +30,11 @@ export const UserAccount = (props) => {
   useEffect(() => {
     if (initializing.current) {
       initializing.current = false;
-      pp.addPreferencesHandler(prefsHandler);
+      pp.subscribe("preferences", prefsHandler);
     }
 
     return () => {
-      pp.removePreferenceHandler(prefsHandler);
+      pp.unsubscribe("preferences", prefsHandler);
     };
   }, [pp]);
 

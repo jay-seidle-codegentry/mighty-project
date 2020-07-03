@@ -20,9 +20,9 @@ export const ProfileContext = React.createContext(initialContext);
 // Create Provider
 export const ProfileProvider = (props) => {
   const { getTokenSilently, user } = useAuth0();
-  // Setup Preferences Store
-  const preferences = useRef();
-  const preferenceHandlers = useRef([]);
+
+  const pubishedData = useRef(new Map());
+  const subscribedHandlers = useRef(new Map());
 
   const profileContext = useContext(ProfileContext);
   const [initializing, setInitializing] = useState(true);
@@ -42,13 +42,73 @@ export const ProfileProvider = (props) => {
   const [accounts, setAccounts] = useState(profileContext.accounts);
   const [envelopes, setEnvelopes] = useState(profileContext.envelopes);
 
+  const secureParams = async (params) => {
+    const token = await getTokenSilently();
+    return { token: token, ...params };
+  };
+
+  const confirmSubjectSetup = (subject) => {
+    if (!subject) throw new Error("invalid subject");
+
+    if (!subscribedHandlers.current.has(subject)) {
+      subscribedHandlers.current.set(subject, []);
+    }
+
+    if (!pubishedData.current.has(subject)) {
+      pubishedData.current.set(subject, {});
+    }
+  };
+
+  const triggerHandler = (handler, data) => {
+    try {
+      handler(data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const subscribe = async (subject, handler) => {
+    confirmSubjectSetup(subject);
+
+    subscribedHandlers.current.get(subject).push(handler);
+
+    if (Object.entries(pubishedData.current.get(subject)).length === 0) {
+      // initialize if has initializer
+      if (initializers[subject]) {
+        const { method, usecase, params } = initializers[subject];
+        if (method && usecase && params) {
+          await method(usecase, params);
+        }
+      }
+    } else {
+      triggerHandler(handler, pubishedData.current.get(subject));
+    }
+  };
+
+  const unsubscribe = async (subject, handler) => {
+    if (subscribedHandlers.current.has(subject)) {
+      subscribedHandlers.current.set(subject, subscribedHandlers.current.get(subject).filter((h) => {
+        return h !== handler;
+      }));
+    }
+  };
+
+  const publish = async (subject, data) => {
+    confirmSubjectSetup(subject);
+    pubishedData.current.set(subject, {
+      ...pubishedData.current.get(subject),
+      ...data,
+    });
+    subscribedHandlers.current.get(subject).forEach((handler) => {
+      triggerHandler(handler, data);
+    });
+  };
+
   const createProfileContext = async (profileUsecase, params) => {
     setLoading(true);
     let profile = {};
     try {
-      const token = await getTokenSilently();
-
-      profile = await profileUsecase({ token: token, ...params });
+      profile = await profileUsecase(await secureParams(params));
       setExists(profile.exists ? profile.exists : initialContext.exists);
       setErrorState(profile.error ? profile.error : initialContext.errorState);
       setAvatar(profile.avatar ? profile.avatar : user.picture);
@@ -68,40 +128,23 @@ export const ProfileProvider = (props) => {
     setLoading(false);
   };
 
-  const triggerHandler = (handler, data) => {
-    try {
-      handler(data);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
-  const addPreferencesHandler = async (handler) => {
-    preferenceHandlers.current.push(handler);
-    if(!preferences.current) {
-      await withPreferences(getPreferences, {});
-    } else {
-      triggerHandler(handler, preferences.current);
-    }
-  };
-
-  const removePreferenceHandler = async (handler) => {
-    preferenceHandlers.current = preferenceHandlers.current.filter((h) => { return h !== handler; });
-  };
-
   const withPreferences = async (usecase, params) => {
-    const token = await getTokenSilently();
-    const results = await usecase({ token: token, ...params });
-    preferences.current = { ...preferences.current, ...results };
-    preferenceHandlers.current.forEach((handler) => {
-      triggerHandler(handler, results);
-    });
+    const results = await usecase(await secureParams(params));
+    publish("preferences", results);
   };
 
   if (initializing) {
     createProfileContext(getProfile, {});
     setInitializing(false);
   }
+  const initializers = {
+    preferences: {
+      method: withPreferences,
+      usecase: getPreferences,
+      params: {},
+    },
+    profile: { method: createProfileContext, usecase: getProfile, params: {} },
+  };
 
   const provider = {
     loading,
@@ -117,12 +160,12 @@ export const ProfileProvider = (props) => {
       createProfileContext(profileUsecase, params);
     },
     withPreferences: withPreferences,
-    addPreferencesHandler: addPreferencesHandler,
-    removePreferenceHandler: removePreferenceHandler,
+    subscribe: subscribe,
+    unsubscribe: unsubscribe,
   };
 
   return (
-    <ProfileContext.Provider value={provider} >
+    <ProfileContext.Provider value={provider}>
       {props.children}
     </ProfileContext.Provider>
   );
