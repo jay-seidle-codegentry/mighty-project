@@ -1,10 +1,6 @@
-import React, { useContext, useState } from "react";
-import { getProfile } from "../../usecases/profile-api.usecase";
-//import ProfileImage from "../../imges/searchpng.com-deafult-profile-icon-transparent-png-free-download.png";
-//import ProfileImage from "../../imges/signup-login.png";
+import React, { useContext, useState, useRef } from "react";
+import { getProfile, getPreferences } from "../../usecases/profile-api.usecase";
 import { useAuth0 } from "../../react-auth0-spa";
-// import {useFetchIt, fetchIt} from "../../utils/useFetchIt";
-// import { getProfile, setProfile } from "../../usecases/user-api.usecase";
 
 const initialContext = {
   loading: true,
@@ -24,6 +20,10 @@ export const ProfileContext = React.createContext(initialContext);
 // Create Provider
 export const ProfileProvider = (props) => {
   const { getTokenSilently, user } = useAuth0();
+  // Setup Preferences Store
+  const preferences = useRef();
+  const preferenceHandlers = useRef([]);
+
   const profileContext = useContext(ProfileContext);
   const [initializing, setInitializing] = useState(true);
 
@@ -68,6 +68,36 @@ export const ProfileProvider = (props) => {
     setLoading(false);
   };
 
+  const triggerHandler = (handler, data) => {
+    try {
+      handler(data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  const addPreferencesHandler = async (handler) => {
+    preferenceHandlers.current.push(handler);
+    if(!preferences.current) {
+      await withPreferences(getPreferences, {});
+    } else {
+      triggerHandler(handler, preferences.current);
+    }
+  };
+
+  const removePreferenceHandler = async (handler) => {
+    preferenceHandlers.current = preferenceHandlers.current.filter((h) => { return h !== handler; });
+  };
+
+  const withPreferences = async (usecase, params) => {
+    const token = await getTokenSilently();
+    const results = await usecase({ token: token, ...params });
+    preferences.current = { ...preferences.current, ...results };
+    preferenceHandlers.current.forEach((handler) => {
+      triggerHandler(handler, results);
+    });
+  };
+
   if (initializing) {
     createProfileContext(getProfile, {});
     setInitializing(false);
@@ -86,10 +116,13 @@ export const ProfileProvider = (props) => {
     setProfile: async (profileUsecase, params) => {
       createProfileContext(profileUsecase, params);
     },
+    withPreferences: withPreferences,
+    addPreferencesHandler: addPreferencesHandler,
+    removePreferenceHandler: removePreferenceHandler,
   };
 
   return (
-    <ProfileContext.Provider value={provider}>
+    <ProfileContext.Provider value={provider} >
       {props.children}
     </ProfileContext.Provider>
   );

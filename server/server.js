@@ -70,6 +70,11 @@ app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(hpp());
 
+let userPreferences = new Map();
+userPreferences.set("__default", {
+  test: "dumb",
+});
+
 let transactions = [
   {
     id: "5efa62d081bc407e2e59d82a",
@@ -306,6 +311,21 @@ app.post("/api/envelope/remove", checkJwt, (req, res) => {
   const envelopeList = user.envelopes.filter(function (envelope) {
     if (envelope.id == key) {
       msg = "envelope removed successfully";
+      if (
+        envelope.detail.forEach((e) => {
+          if (e.amount != 0) {
+            const reallocationTransaction = transactionFactory(
+              new Date(),
+              e.amount,
+              "Delete",
+              "Balance from " + e.name + " Envelope. Deleted!",
+              e.id,
+              e.name
+            );
+            transactions.push(reallocationTransaction);
+          }
+        })
+      );
       return false;
     }
     return true;
@@ -376,23 +396,45 @@ app.post("/api/transactions/upload", checkJwt, async (req, res) => {
 const createTransaction = (record, accountId, accountTitle, map) => {
   const keys = Object.keys(record);
   const recordDate = new Date(record[keys[map.date]]);
+
+  const result = transactionFactory(
+    recordDate,
+    record[keys[map.amount]],
+    record[keys[map.type]],
+    record[keys[map.description]],
+    accountId,
+    accountTitle
+  );
+
+  return result;
+};
+
+const transactionFactory = (
+  date,
+  amount,
+  type,
+  description,
+  accountId,
+  accountTitle
+) => {
+  const recordDate = new Date(date);
   const dow = days[recordDate.getDay()];
   const month = mons[recordDate.getMonth()];
   const year = recordDate.getFullYear();
   const day = recordDate.getDate();
   const curYear = new Date().getFullYear();
-
-  const result = {
+  return {
     id: ((Math.random() * Number.MAX_SAFE_INTEGER).toFixed(0) + 1).toString(),
     date:
       dow + ", " + month + " " + day + (year !== curYear ? ", " + year : ""),
-    amount: record[keys[map.amount]],
-    type: record[keys[map.type]],
-    description: record[keys[map.description]],
-    account: { id: accountId, title: accountTitle },
+    amount: amount,
+    type: type,
+    description: description,
+    account: {
+      id: accountId,
+      title: accountTitle,
+    },
   };
-
-  return result;
 };
 
 app.post("/api/transactions/import", checkJwt, async (req, res) => {
@@ -533,6 +575,67 @@ app.post("/api/transactions/assign", checkJwt, (req, res) => {
   }
 
   res.json(transactions[transactionIndex]);
+});
+
+// https://gist.github.com/Yimiprod/7ee176597fef230d1451
+function difference(object, base) {
+  function changes(object, base) {
+    return _.transform(object, function (result, value, key) {
+      if (!_.isEqual(value, base[key])) {
+        result[key] =
+          _.isObject(value) && _.isObject(base[key])
+            ? changes(value, base[key])
+            : value;
+      }
+    });
+  }
+  return changes(object, base);
+}
+
+app.get("/api/user-preferences", checkJwt, (req, res) => {
+  const userInfo = parseJwt(req.headers.authorization);
+  if (!userInfo) {
+    res.status(404).json({ message: "user not found!" });
+    return;
+  }
+
+  const defaults = userPreferences.get("__default");
+  const preferencesKey = md5(userInfo.sub);
+
+  if (!userPreferences.has(preferencesKey)) {
+    res.json(defaults);
+    return;
+  }
+
+  const prefs = userPreferences.get(preferencesKey);
+  res.json({ ...defaults, ...prefs });
+});
+
+app.post("/api/user-preferences", checkJwt, (req, res) => {
+  const userInfo = parseJwt(req.headers.authorization);
+  if (!userInfo) {
+    res.status(404).json({ message: "user not found!" });
+    return;
+  }
+
+  const defaults = userPreferences.get("__default");
+  const preferencesKey = md5(userInfo.sub);
+
+  let currentPrefs = {};
+  if (userPreferences.has(preferencesKey)) {
+    currentPrefs = userPreferences.get(preferencesKey);
+  }
+
+  const copy = JSON.parse(JSON.stringify(currentPrefs));
+
+  const { properties } = req.body;
+  userPreferences.set(preferencesKey, { ...currentPrefs, ...properties });
+
+  const prefs = userPreferences.get(preferencesKey);
+
+  const changes = difference(prefs, copy);
+
+  res.json(changes);
 });
 
 // app.get("/api/external", checkJwt, (req, res) => {
