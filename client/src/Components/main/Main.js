@@ -13,24 +13,28 @@ const styles = {
 
 export var Main = (props) => {
   const globalContext = useContext(GlobalContext);
-  const { view } = useContext(ViewContext);
+  const { view, setView } = useContext(ViewContext);
   const [validProfile, setValidProfile] = useState();
 
-  const profileHandler = (profile) => {
-    const { exists } = profile;
-    if (exists) setValidProfile(exists);
-  };
-
   useEffect(() => {
-    globalContext.subscribe("profile", profileHandler);
+    const profileHandler = (profile) => {
+      if (!view) setView("default");
+      const { exists } = profile;
+      if (exists) setValidProfile(exists);
+    };
+  
+      globalContext.subscribe("profile", profileHandler);
 
     return () => {
       globalContext.unsubscribe("profile", profileHandler);
     };
-  }, [globalContext]);
+  }, [globalContext, setView, view]);
 
   let SelectedComponent;
   switch (view) {
+    case null:
+      SelectedComponent = Views.Blank;
+      break;
     case "account":
       SelectedComponent = Views.UserAccount;
       break;
