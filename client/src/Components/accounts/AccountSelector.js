@@ -1,6 +1,6 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { LanguageContext } from "../locale/LanguageProvider";
-import { ProfileContext } from "../Profile/ProfileProvider";
+import { GlobalContext } from "../Global/GlobalProvider";
 import { Typography, List, ListItem, ListItemText } from "@material-ui/core";
 import { CurrencyAmount } from "../core/CurrencyAmount";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -21,20 +21,36 @@ const buildAccountSelectorButton = (account, index, handler) => {
 };
 
 export const AccountSelector = (props) => {
+  const globalContext = useContext(GlobalContext);
   const { accountSelectedHandler } = props;
   const { Title, SelectedMessage, SelectOneLabel } = useContext(
     LanguageContext
   ).dictionary.Account.Selector;
-  const accounts = useContext(ProfileContext).accounts;
+  const [accounts, setAccounts] = useState([]);
   const selectedAccount = useRef();
+
+  const accountsHandler = (accounts) => {
+    if (accounts) setAccounts(accounts);
+  };
+
+  useEffect(() => {
+    globalContext.subscribe("accounts", accountsHandler);
+
+    return () => {
+      globalContext.unsubscribe("accounts", accountsHandler);
+    };
+  }, [globalContext]);
 
   const selectAccount = (account) => {
     selectAccount.current = account;
-    accountSelectedHandler({ account: selectAccount.current, message: SelectedMessage });
+    accountSelectedHandler({
+      account: selectAccount.current,
+      message: SelectedMessage,
+    });
   };
 
   const closeIt = () => {
-    if(!selectedAccount) accountSelectedHandler({ canceled: true });
+    if (!selectedAccount) accountSelectedHandler({ canceled: true });
   };
 
   return (

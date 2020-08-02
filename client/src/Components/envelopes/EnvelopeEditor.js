@@ -73,7 +73,7 @@ export const EnvelopeEditor = (props) => {
     const body = {};
     if (id) body.id = id;
     if (newEnvelopeName) body.title = newEnvelopeName;
-    profileContext.setProfile(saveEnvelope, { body: body });
+    profileContext.withProfile(saveEnvelope, { body: body });
     closeHandler({
       canceled: false,
       message: SavedMessage,

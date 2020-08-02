@@ -15,6 +15,7 @@ import { IconButton, Typography, Button } from "@material-ui/core";
 import { TransactionContext } from "../transaction/TransactionProvider";
 import { swapArrayElements } from "../../utils/general-utils";
 import { importStoredTransactions } from "../../usecases/transactions_api.usecase";
+import { GlobalContext } from "../Global/GlobalProvider";
 
 const useStyles = makeStyles({
   table: {
@@ -35,41 +36,64 @@ const useStyles = makeStyles({
 });
 
 export const ImportVerification = (props) => {
+  const globalContext = useContext(GlobalContext);
   const { closeHandler } = props;
-  const { stagedTransactionInfo } = useContext(TransactionContext).provider;
-  const { executeNonStateUsecase } = useContext(TransactionContext);
-
-  let mappedFields = [];
-  Object.keys(stagedTransactionInfo.data.items[0]).map((key, index) => {
-    mappedFields.push(stagedTransactionInfo.data.mapping[key]);
-    return true;
-  });
-  const [fieldMapping, setFieldMapping] = useState(mappedFields);
-
-  let initialFirstRow = -1;
-  stagedTransactionInfo.data.items.map((row, rowIndex) =>
-    Object.values(row).map((value, cellIndex) => {
-      if (!isNaN(value) && initialFirstRow === -1) {
-        initialFirstRow = rowIndex;
-      }
-      return true;
-    })
-  );
-  const [firstRowWithData, setFirstRowWithData] = useState(initialFirstRow);
+  const [stagedTransactionInfo, setStagedTransactionInfo] = useState(null);
+  const [fieldMapping, setFieldMapping] = useState([]);
+  const [firstRowWithData, setFirstRowWithData] = useState(-1);
   const previousFirstRowWithData = useRef(-1);
+  const { withTransactions } = useContext(TransactionContext);
+
+  const stagedDataHandler = (stagedDataInfo) => {
+    setStagedTransactionInfo(stagedDataInfo);
+  };
+
+  useEffect(() => {
+    globalContext.subscribe("stagedData", stagedDataHandler);
+
+    let mappedFields = [];
+    if (stagedTransactionInfo) {
+      Object.keys(stagedTransactionInfo.items[0]).map((key, index) => {
+        mappedFields.push(stagedTransactionInfo.mapping[key]);
+        return true;
+      });
+      setFieldMapping(mappedFields);
+    }
+
+    let initialFirstRow = -1;
+    if (stagedTransactionInfo) {
+      stagedTransactionInfo.items.map((row, rowIndex) =>
+        Object.values(row).map((value, cellIndex) => {
+          if (!isNaN(value) && initialFirstRow === -1) {
+            initialFirstRow = rowIndex;
+          }
+          return true;
+        })
+      );
+    }
+    setFirstRowWithData(initialFirstRow);
+
+    return () => {
+      globalContext.unsubscribe("stagedData", stagedDataHandler);
+    };
+  }, [globalContext, stagedTransactionInfo]);
 
   const classes = useStyles();
 
   const importIt = async () => {
     const params = {
       body: {
-        key: stagedTransactionInfo.data.key,
-        account: stagedTransactionInfo.data.account,
+        key: stagedTransactionInfo.key,
+        account: stagedTransactionInfo.account,
         map: fieldMapping,
         startingRow: firstRowWithData,
       },
     };
-    await executeNonStateUsecase(importStoredTransactions, params);
+    await withTransactions(importStoredTransactions, params);
+    if (closeHandler) closeHandler();
+  };
+
+  const closeIt = () => {
     if (closeHandler) closeHandler();
   };
 
@@ -130,20 +154,21 @@ export const ImportVerification = (props) => {
               <TableCell padding="none" size="medium">
                 Start
               </TableCell>
-              {Object.keys(stagedTransactionInfo.data.items[0]).map(
-                (key, index) => {
-                  return (
-                    <TableCell
-                      padding="none"
-                      size="medium"
-                      key={"head=" + key + "-" + index}
-                      align="center"
-                    >
-                      {key}
-                    </TableCell>
-                  );
-                }
-              )}
+              {stagedTransactionInfo &&
+                Object.keys(stagedTransactionInfo.items[0]).map(
+                  (key, index) => {
+                    return (
+                      <TableCell
+                        padding="none"
+                        size="medium"
+                        key={"head=" + key + "-" + index}
+                        align="center"
+                      >
+                        {key}
+                      </TableCell>
+                    );
+                  }
+                )}
             </TableRow>
           </TableHead>
           <TableHead>
@@ -187,51 +212,53 @@ export const ImportVerification = (props) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {stagedTransactionInfo.data.items.map((row, rowIndex) => (
-              <TableRow
-                id={"row" + rowIndex}
-                className={classes.standardBackground}
-                key={"data-row-" + rowIndex}
-              >
-                <TableCell padding="none">
-                  <span id={"arrow" + rowIndex} style={{ display: "none" }}>
-                    <IconButton
-                      disabled={rowIndex === 0}
-                      className={classes.assignButton}
-                      onClick={() => onButtonClick("up", rowIndex)}
-                    >
-                      <ArrowUpwardIcon className={classes.icon} />
-                    </IconButton>
-                    |
-                    <IconButton
-                      disabled={
-                        rowIndex === stagedTransactionInfo.data.items.length - 1
-                      }
-                      className={classes.assignButton}
-                      onClick={() => onButtonClick("down", rowIndex)}
-                    >
-                      <ArrowDownwardIcon className={classes.icon} />
-                    </IconButton>
-                  </span>
-                </TableCell>
-                {Object.values(row).map((value, cellIndex) => {
-                  return (
-                    <TableCell
-                      padding="none"
-                      key={"row-" + rowIndex + "-cell-" + cellIndex}
-                      align="center"
-                    >
-                      {value}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
+            {stagedTransactionInfo &&
+              stagedTransactionInfo.items.map((row, rowIndex) => (
+                <TableRow
+                  id={"row" + rowIndex}
+                  className={classes.standardBackground}
+                  key={"data-row-" + rowIndex}
+                >
+                  <TableCell padding="none">
+                    <span id={"arrow" + rowIndex} style={{ display: "none" }}>
+                      <IconButton
+                        disabled={rowIndex === 0}
+                        className={classes.assignButton}
+                        onClick={() => onButtonClick("up", rowIndex)}
+                      >
+                        <ArrowUpwardIcon className={classes.icon} />
+                      </IconButton>
+                      |
+                      <IconButton
+                        disabled={
+                          stagedTransactionInfo &&
+                          rowIndex === stagedTransactionInfo.items.length - 1
+                        }
+                        className={classes.assignButton}
+                        onClick={() => onButtonClick("down", rowIndex)}
+                      >
+                        <ArrowDownwardIcon className={classes.icon} />
+                      </IconButton>
+                    </span>
+                  </TableCell>
+                  {Object.values(row).map((value, cellIndex) => {
+                    return (
+                      <TableCell
+                        padding="none"
+                        key={"row-" + rowIndex + "-cell-" + cellIndex}
+                        align="center"
+                      >
+                        {value}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
       <Typography style={{ float: "right" }}>
-        <Button color="secondary">Cancel</Button>
+        <Button onClick={closeIt} color="secondary">Cancel</Button>
         <Button onClick={importIt} color="primary">
           OK
         </Button>

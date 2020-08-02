@@ -5,15 +5,9 @@ import Loading from "./Components/loading/Loading";
 import "./App.css";
 import { LanguageContext } from "./Components/locale/LanguageProvider";
 import { ProfileProvider } from "./Components/Profile/ProfileProvider";
-//import { Loading } from "./Components/loading/Loading";
 import { Main } from "./Components/main/Main";
 import ViewProvider from "./Components/view/ViewProvider";
-//import Secret from "./Components/secret/Secret";
-//import {ProfileConsumerMock} from './mocks/ProfileConsumer.mock';
-//import NotFound from "./Components/notfound/NotFound";
-//import NavBar from "./Components/navbar/NavBar";
-//import CallBack from "./Components/callback/Callback";
-//import { getProfile } from './usecases/user-api.usecase';
+import { GlobalProvider } from "./Components/Global/GlobalProvider";
 
 const App = (props) => {
   var { isAuthenticated, loading } = useAuth0();
@@ -21,18 +15,19 @@ const App = (props) => {
 
   if (loading) {
     return <Loading />;
-    //<Loading />;
   }
 
   document.title = t.Title;
 
   if (isAuthenticated) {
     return (
-      <ProfileProvider>
-        <ViewProvider>
-          <Main />
-        </ViewProvider>
-      </ProfileProvider>
+      <GlobalProvider>
+        <ProfileProvider>
+          <ViewProvider>
+            <Main />
+          </ViewProvider>
+        </ProfileProvider>
+      </GlobalProvider>
     );
   } else {
     return <LandingPage />;
@@ -40,27 +35,3 @@ const App = (props) => {
 };
 
 export default App;
-//console.log(contextType.dictionary.Title);
-
-// let renderComponent = <NotFound />;
-
-// switch (props.location) {
-//   case "":
-//     //getProfile(au)
-//     if (isAuthenticated) {
-//       renderComponent = <Secret {...props} />;
-//     } else {
-//       renderComponent = <LandingPage {...props} />;
-//     }
-//     break;
-//   case "secret":
-//     if (isAuthenticated) {
-//       renderComponent = <Secret {...props} />;
-//     }
-//     break;
-//   case "callback":
-//     renderComponent = <CallBack {...props} />;
-//     break;
-//   default:
-//     renderComponent = <NotFound />;
-// }

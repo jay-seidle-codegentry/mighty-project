@@ -6,6 +6,7 @@ import PublishIcon from "@material-ui/icons/Publish";
 import InboxCard from "./InboxCard";
 import ImportVerification from "./ImportVerification";
 import { TransactionContext } from "../transaction/TransactionProvider";
+import { GlobalContext } from "../Global/GlobalProvider";
 import { LanguageContext } from "../../Components/locale/LanguageProvider";
 import {
   ExpansionPanel,
@@ -19,21 +20,33 @@ import {
 } from "../../usecases/transactions_api.usecase";
 import Dialoger from "../core/Dialoger";
 import { AccountSelector } from "../accounts/AccountSelector";
-import { ProfileContext } from "../Profile/ProfileProvider";
-import { getProfile } from "../../usecases/profile-api.usecase";
 import { EnvelopeSelector } from "../envelopes/EnvelopeSelector";
 
 export const Inbox = (props) => {
-  const provider = useContext(ProfileContext);
   const T = useContext(LanguageContext).dictionary;
-  const setUploadTransactions = useContext(TransactionContext)
-    .setUploadTransactions;
-  const clearStagedTransactions = useContext(TransactionContext)
-    .clearStagedTransactions;
-  const { transactions, stagedTransactionInfo } = useContext(
-    TransactionContext
-  ).provider;
-  const { executeNonStateUsecase } = useContext(TransactionContext);
+  const globalContext = useContext(GlobalContext);
+  const [transactions, setTransactions] = useState([]);
+  const [stagedTransactionInfo, setStagedTransactionInfo] = useState(null);
+  const transactionContext = useContext(TransactionContext);
+
+  const inboxItemsHandler = (inboxItems) => {
+    setTransactions(inboxItems);
+  };
+
+  const stagedDataHandler = (stagedDataInfo) => {
+    setUiState(3); //??????
+    setStagedTransactionInfo(stagedDataInfo);
+  };
+
+  useEffect(() => {
+    globalContext.subscribe("inbox", inboxItemsHandler);
+    globalContext.subscribe("stagedData", stagedDataHandler);
+
+    return () => {
+      globalContext.unsubscribe("stagedData", stagedDataHandler);
+      globalContext.unsubscribe("inbox", inboxItemsHandler);
+    };
+  }, [globalContext]);
 
   const classes = useStyles();
 
@@ -66,7 +79,7 @@ export const Inbox = (props) => {
     setShowAccountSelector(Boolean(uiState === 1));
     if (uiState === 2) {
       uploader.current.click();
-      setUiState(3);
+      setUiState(0);
     }
   }, [uiState]);
 
@@ -95,16 +108,13 @@ export const Inbox = (props) => {
     if (canceled) {
       console.log(message);
     } else {
-      console.log(activeTransaction.current);
-      console.log(envelope);
       const params = {
         body: {
           transactionId: activeTransaction.current.id,
           envelopeId: envelope.id,
         },
       };
-      await executeNonStateUsecase(assignEnvelopeToTransaction, params);
-      provider.setProfile(getProfile, { headers: { aktualisierung: true } });
+      transactionContext.withTransactions(assignEnvelopeToTransaction, params);
     }
   };
 
@@ -124,7 +134,7 @@ export const Inbox = (props) => {
     if (event.target.files.length < 1) return;
     const file = event.target.files[0];
 
-    setUploadTransactions(uploadTransactions, {
+    transactionContext.withTransactions(uploadTransactions, {
       account: selectedAccount.current,
       type: "csv",
       file: file,
@@ -134,9 +144,8 @@ export const Inbox = (props) => {
 
   const dialogerImportCloseHandler = () => {
     if (uiState === 3) {
-      clearStagedTransactions();
+      setStagedTransactionInfo(null);
       setUiState(0);
-      provider.setProfile(getProfile, { headers: { aktualisierung: true } });
     }
   };
 

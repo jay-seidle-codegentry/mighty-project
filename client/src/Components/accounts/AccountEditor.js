@@ -89,7 +89,7 @@ export const AccountEditor = (props) => {
         },
       ];
     }
-    profileContext.setProfile(saveAccount, { body: body });
+    profileContext.withProfile(saveAccount, { body: body });
     closeHandler({
       canceled: false,
       message: SavedMessage,

@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import NavBar from "../../Components/navbar/NavBar";
 import { Paper } from "@material-ui/core";
 import { ViewContext } from "../view/ViewProvider";
-import { ProfileContext } from "../Profile/ProfileProvider";
 import Views from "../../ViewComponents";
+import { GlobalContext } from "../Global/GlobalProvider";
 
 const styles = {
   viewContainer: {
@@ -12,8 +12,22 @@ const styles = {
 };
 
 export var Main = (props) => {
-  const { exists } = useContext(ProfileContext);
+  const globalContext = useContext(GlobalContext);
   const { view } = useContext(ViewContext);
+  const [validProfile, setValidProfile] = useState();
+
+  const profileHandler = (profile) => {
+    const { exists } = profile;
+    if (exists) setValidProfile(exists);
+  };
+
+  useEffect(() => {
+    globalContext.subscribe("profile", profileHandler);
+
+    return () => {
+      globalContext.unsubscribe("profile", profileHandler);
+    };
+  }, [globalContext]);
 
   let SelectedComponent;
   switch (view) {
@@ -27,12 +41,13 @@ export var Main = (props) => {
       SelectedComponent = Views.Edit;
       break;
     default:
-      if (!exists) {
+      if (!validProfile) {
         SelectedComponent = Views.Edit;
       } else {
         SelectedComponent = Views.Home;
       }
   }
+
   return (
     <div>
       <NavBar />

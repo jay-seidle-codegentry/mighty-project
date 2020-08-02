@@ -1,10 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Typography, Box, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { LanguageContext } from "../../Components/locale/LanguageProvider";
-import { ProfileContext } from "../../Components/Profile/ProfileProvider";
-import Loading from "../../Components/loading/Loading";
 import { ViewContext } from "../../Components/view/ViewProvider";
+import { GlobalContext } from "../../Components/Global/GlobalProvider";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,8 +22,8 @@ const useStyles = makeStyles((theme) => ({
 export const ProfileView = (props) => {
   const T = useContext(LanguageContext).dictionary;
   const { setView } = useContext(ViewContext);
-  const profileContext = useContext(ProfileContext);
-  const { loading, avatar, nickName, email, onBoarded } = profileContext;
+  const globalContext = useContext(GlobalContext);
+  const [profile, setProfile] = useState({});
   const {
     TitleLabel,
     EditLabel,
@@ -44,13 +43,26 @@ export const ProfileView = (props) => {
     },
   };
 
+  const profileHandler = (profileData) => {
+    if (profileData) {
+      if (!profileData.onBoarded) {
+        profileData.onBoarded = new Date().toLocaleDateString();
+      }
+      setProfile(profileData);
+    }
+  };
+
+  useEffect(() => {
+    globalContext.subscribe("profile", profileHandler);
+
+    return () => {
+      globalContext.unsubscribe("profile", profileHandler);
+    };
+  }, [globalContext]);
+
   const editIt = (event) => {
     setView("editProfile");
   };
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <Typography component="div">
@@ -58,17 +70,29 @@ export const ProfileView = (props) => {
         {TitleLabel}
         <div className={classes.root}>
           <div>
-            <img alt={nickName} style={styles.picbox} src={avatar} />
+            <img
+              alt={profile.nickName}
+              style={styles.picbox}
+              src={profile.avatar}
+            />
             <br />
             <Box textAlign="center" fontSize="h6.fontSize">
-            <span>{NameLabel} </span>
-              <span><strong>{nickName}</strong></span>
-            <br />
+              <span>{NameLabel} </span>
+              <span>
+                <strong>{profile.nickName}</strong>
+              </span>
+              <br />
               <span>{EmailLabel} </span>
-              <span><strong>{email}</strong></span>
+              <span>
+                <strong>{profile.email}</strong>
+              </span>
               <br />
               <span>{DateLabel} </span>
-              <span><strong>{new Date(onBoarded).toLocaleDateString("en-US")}</strong></span>
+              <span>
+                <strong>
+                  {new Date(profile.onBoarded).toLocaleDateString("en-US")}
+                </strong>
+              </span>
             </Box>
             <div className={classes.buttons}>
               <Button onClick={editIt} variant="contained" color="primary">

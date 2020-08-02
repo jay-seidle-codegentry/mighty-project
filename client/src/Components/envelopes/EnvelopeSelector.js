@@ -1,6 +1,6 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { LanguageContext } from "../locale/LanguageProvider";
-import { ProfileContext } from "../Profile/ProfileProvider";
+import { GlobalContext } from "../Global/GlobalProvider";
 import { Typography, List, ListItem, ListItemText } from "@material-ui/core";
 import { CurrencyAmount } from "../core/CurrencyAmount";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
@@ -8,13 +8,13 @@ import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 const sumTotal = (detail) => {
   let total = 0;
   detail.forEach((element) => {
-    console.log(element);
     total = total + parseFloat(element.amount);
   });
   return total;
 };
 
 export const EnvelopeSelector = (props) => {
+  const globalContext = useContext(GlobalContext);
   const { envelopeSelectedHandler } = props;
   const {
     Title,
@@ -22,9 +22,21 @@ export const EnvelopeSelector = (props) => {
     SelectOneLabel,
     CanceledMessage,
   } = useContext(LanguageContext).dictionary.Envelope.Selector;
-  const envelopes = useContext(ProfileContext).envelopes;
+  const [envelopes, setEnvelopes] = useState([]);
   const selectedEnvelope = useRef();
   const [confirm, setConfirm] = useState(-1);
+
+  const envelopesHandler = (envelopes) => {
+    setEnvelopes(envelopes);
+  };
+
+  useEffect(() => {
+    globalContext.subscribe("envelopes", envelopesHandler);
+
+    return () => {
+      globalContext.unsubscribe("envelopes", envelopesHandler);
+    };
+  }, [globalContext]);
 
   const clearHandler = () => {
     //setConfirm(0);
@@ -32,13 +44,13 @@ export const EnvelopeSelector = (props) => {
 
   const buildEnvelopeSelectorButton = (envelope, index, handler) => {
     const confirmationHandler = (idx) => {
-      if(confirm === idx) {
+      if (confirm === idx) {
         handler(envelope);
-      }    
+      }
       setConfirm(idx);
     };
-  
-      return (
+
+    return (
       <ClickAwayListener key={"cal" + index} onClickAway={clearHandler}>
         <ListItem
           onClick={() => confirmationHandler(index)}
@@ -62,7 +74,9 @@ export const EnvelopeSelector = (props) => {
                   {envelope.title} {}
                 </span>
                 <CurrencyAmount amount={sumTotal(envelope.detail)} />
-                <div style={{ color: "red", fontWeight: "bold" }}>Click again to confirm?</div>
+                <div style={{ color: "red", fontWeight: "bold" }}>
+                  Click again to confirm?
+                </div>
               </strong>
             </ListItemText>
           )}
@@ -72,7 +86,6 @@ export const EnvelopeSelector = (props) => {
   };
 
   const selectEnvelope = (envelope) => {
-    console.log("envelope selected");
     selectEnvelope.current = envelope;
     envelopeSelectedHandler({
       envelope: selectEnvelope.current,
@@ -88,7 +101,6 @@ export const EnvelopeSelector = (props) => {
   return (
     <ClickAwayListener
       onClickAway={() => {
-        console.log("clik away");
         closeIt();
       }}
     >

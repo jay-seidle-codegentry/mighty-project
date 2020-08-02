@@ -1,15 +1,13 @@
-// import React, { useContext } from "react";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import "typeface-roboto";
 import { useAuth0 } from "../../react-auth0-spa";
 import { AppBar, Toolbar, Menu, MenuItem, Avatar } from "@material-ui/core";
 import SimpleMenu from "../simple-menu/SimpleMenu";
 import LanguageSelector from "../locale/LanguageSelector";
-import { ProfileContext } from "../Profile/ProfileProvider";
 import { ViewContext } from "../view/ViewProvider";
 import { LanguageContext } from "../locale/LanguageProvider";
-
+import { GlobalContext } from "../Global/GlobalProvider";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -46,17 +44,28 @@ const styles = {
 };
 
 const NavBar = () => {
+  const globalContext = useContext(GlobalContext);
   const { isAuthenticated } = useAuth0();
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const { avatar, nickName } = useContext(ProfileContext);
+  const [avatar, setAvatar] = useState("");
+  const [nickName, setNickName] = useState("");
   const { setView } = useContext(ViewContext);
   const T = useContext(LanguageContext).dictionary;
 
-  // const handleChange = (event) => {
-  //   setAuth(event.target.checked);
-  // };
+  const profileHandler = (newProfile) => {
+    if (newProfile.avatar) setAvatar(newProfile.avatar);
+    if (newProfile.nickName) setNickName(newProfile.nickName);
+  };
+
+  useEffect(() => {
+    globalContext.subscribe("profile", profileHandler);
+
+    return () => {
+      globalContext.unsubscribe("profile", profileHandler);
+    };
+  }, [globalContext]);
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -66,8 +75,6 @@ const NavBar = () => {
     setAnchorEl(null);
     if (event.currentTarget.id) setView(event.currentTarget.id);
   };
-
-  //console.log(avatar);
 
   return (
     <div className={classes.root}>

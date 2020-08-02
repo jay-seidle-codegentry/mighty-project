@@ -38,7 +38,7 @@ const mons = [
   "December",
 ];
 
-const handleInboxRequest = (req, res) => {
+const handleInboxRequest = (req, res, addToResponse) => {
   let page = req.params.pageId ? parseInt(req.params.pageId) : 0;
 
   const inboxItems = transactions.filter((transaction) => {
@@ -51,8 +51,9 @@ const handleInboxRequest = (req, res) => {
   res.send({
     page: page,
     more: false,
-    errorState: {},
-    transactions: inboxItems,
+    responseState: { msg: "successful" },
+    inbox: inboxItems,
+    ...addToResponse,
   });
 };
 
@@ -103,12 +104,14 @@ let transactions = [
 ];
 
 let user = {
-  id: "5ed3e11f8acdde2754441c39",
-  exists: false,
-  nickName: "Moebly Beaner",
-  email: "john.doe@doa.uri",
-  onBoarded: Date.now,
   responseState: {},
+  profile: {
+    id: "5ed3e11f8acdde2754441c39",
+    exists: false,
+    nickName: "Moebly Beaner",
+    email: "john.doe@doa.uri",
+    onBoarded: Date.now,
+  },
   accounts: [
     {
       id: "5ed3b507f717db58968b7a33",
@@ -213,14 +216,20 @@ let user = {
 app.get("/api/profile", checkJwt, (req, res) => {
   const authHeader = req.headers.authorization;
   const token = authHeader.split(" ")[1];
-  const tokenData = parseJwt(token);
+  // needed to get the user from the db
+  //const tokenData = parseJwt(token);
 
   const etagFlag = app.get("etag");
   if (req.headers.aktualisierung) {
     app.set("etag", false);
   }
 
-  res.json(user);
+  res.json({
+    responseState: { msg: "profile retrieved successfully" },
+    profile: user.profile,
+    envelopes: user.envelopes,
+    accounts: user.accounts,
+  });
   if (req.headers.aktualisierung) {
     app.set("etag", etagFlag);
   }
@@ -229,14 +238,16 @@ app.get("/api/profile", checkJwt, (req, res) => {
 app.post("/api/profile", checkJwt, (req, res) => {
   const { nickName, email } = req.body;
   if (nickName) {
-    user.nickName = nickName;
+    user.profile.nickName = nickName;
   }
   if (email) {
-    user.email = email;
+    user.profile.email = email;
   }
-  user.exists = true;
-  user.responseState = { msg: "updated successfully" };
-  res.json(user);
+  user.profile.exists = true;
+  res.json({
+    responseState: { msg: "profile updated successfully" },
+    profile: user.profile,
+  });
 });
 
 app.post("/api/account/save", checkJwt, (req, res) => {
@@ -259,8 +270,10 @@ app.post("/api/account/save", checkJwt, (req, res) => {
     req.body.id = (Math.random() * 1000000 + 1).toString();
     user.accounts.push(req.body);
   }
-  user.responseState = { msg: msg };
-  res.json(user);
+  res.json({
+    responseState: { msg: msg },
+    accounts: user.accounts,
+  });
 });
 
 app.post("/api/account/remove", checkJwt, (req, res) => {
@@ -275,8 +288,10 @@ app.post("/api/account/remove", checkJwt, (req, res) => {
   });
 
   user.accounts = accountList;
-  user.responseState = { msg: msg };
-  res.json(user);
+  res.json({
+    responseState: { msg: msg },
+    accounts: user.accounts,
+  });
 });
 
 app.post("/api/envelope/save", checkJwt, (req, res) => {
@@ -301,8 +316,10 @@ app.post("/api/envelope/save", checkJwt, (req, res) => {
     req.body.detail = [];
     user.envelopes.push(req.body);
   }
-  user.responseState = { msg: msg };
-  res.json(user);
+  res.json({
+    responseState: { msg: msg },
+    envelopes: user.envelopes,
+  });
 });
 
 app.post("/api/envelope/remove", checkJwt, (req, res) => {
@@ -333,7 +350,10 @@ app.post("/api/envelope/remove", checkJwt, (req, res) => {
 
   user.envelopes = envelopeList;
   user.responseState = { msg: msg };
-  res.json(user);
+  handleInboxRequest(req, res, {
+    responseState: { msg: msg },
+    envelopes: user.envelopes,
+  });
 });
 
 app.get("/api/transactions", checkJwt, (req, res) => {
@@ -377,7 +397,7 @@ app.post("/api/transactions/upload", checkJwt, async (req, res) => {
       res.send({
         status: true,
         responseState: { msg: "File is uploaded" },
-        data: {
+        stagedData: {
           key: preAuthFileName,
           account: account,
           mimetype: csvFile.mimetype,
@@ -574,7 +594,7 @@ app.post("/api/transactions/assign", checkJwt, (req, res) => {
     ].amount = newAmount;
   }
 
-  res.json(transactions[transactionIndex]);
+  handleInboxRequest(req, res, { envelopes: user.envelopes });
 });
 
 // https://gist.github.com/Yimiprod/7ee176597fef230d1451

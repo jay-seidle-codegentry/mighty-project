@@ -26,7 +26,7 @@ export const getInboxTransactions = async (params) => {
 
 export const uploadTransactions = async (params) => {
   const responseData = await fetchIt(host + upload, params);
-  return responseData;
+  return responseData.data ? responseData.data : {};
 };
 
 export const importStoredTransactions = async (params) => {

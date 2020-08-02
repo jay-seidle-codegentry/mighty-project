@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Typography from "@material-ui/core/Typography";
 import { Grid, IconButton } from "@material-ui/core";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
@@ -9,6 +9,7 @@ import { removeAccount } from "../../usecases/profile-api.usecase";
 import RemoveModal from "../core/Remove.modal";
 import Dialoger from "../core/Dialoger";
 import { AccountEditor } from "./AccountEditor";
+import { GlobalContext } from "../Global/GlobalProvider";
 import {
   ExpansionPanel,
   ExpansionPanelSummary,
@@ -22,14 +23,27 @@ function showTransactions(event) {
 }
 
 export const Accounts = (props) => {
+  const globalContext = useContext(GlobalContext);
   const T = useContext(LanguageContext).dictionary;
   const profileContext = useContext(ProfileContext);
-  const { accounts } = profileContext;
+  const [accounts, setAccounts] = useState([]);
   const classes = useStyles();
 
   const [expanded, setExpanded] = useState(false);
   const [removeItem, setRemoveItem] = useState(null);
   const [changeItem, setChangeItem] = useState(null);
+
+  const accountsHandler = (accounts) => {
+    if(accounts) setAccounts(accounts);
+  };
+
+  useEffect(() => {
+    globalContext.subscribe("accounts", accountsHandler);
+
+    return () => {
+      globalContext.unsubscribe("accounts", accountsHandler);
+    };
+  }, [globalContext]);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -48,7 +62,7 @@ export const Accounts = (props) => {
   };
 
   const yesRemove = (account) => {
-    profileContext.setProfile(removeAccount, { body: { id: account.id } });
+    profileContext.withProfile(removeAccount, { body: { id: account.id } });
     setRemoveItem(null);
   };
 

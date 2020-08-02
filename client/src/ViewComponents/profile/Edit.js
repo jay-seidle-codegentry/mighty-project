@@ -1,13 +1,12 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { Typography, Box, Button } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/styles";
-import { useAuth0 } from "../../react-auth0-spa";
 import { LanguageContext } from "../../Components/locale/LanguageProvider";
 import { ProfileContext } from "../../Components/Profile/ProfileProvider";
-import Loading from "../../Components/loading/Loading";
 import { ViewContext } from "../../Components/view/ViewProvider";
 import { setProfile } from "../../usecases/profile-api.usecase";
+import { GlobalContext } from "../../Components/Global/GlobalProvider";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,18 +23,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const ProfileEdit = (props) => {
-  const { logout } = useAuth0();
+  const globalContext = useContext(GlobalContext);
+  const profileContext = useContext(ProfileContext);
   const T = useContext(LanguageContext).dictionary;
   const { setView } = useContext(ViewContext);
-  const profileContext = useContext(ProfileContext);
-  const {
-    exists,
-    loading,
-    avatar,
-    nickName,
-    email,
-    onBoarded,
-  } = profileContext;
+  const [exists, setExists] = useState(false);
+  const [avatar, setAvatar] = useState("");
+  const [nickName, setNickName] = useState("");
+  const [email, setEmail] = useState("");
+  const [onBoarded, setOnBoarded] = useState("");
+
   const {
     TitleLabel,
     EmailLabel,
@@ -58,6 +55,27 @@ export const ProfileEdit = (props) => {
     },
   };
 
+  const profileHandler = (newProfile) => {
+    if (newProfile.nickName) setNickName(newProfile.nickName);
+    if (newProfile.exists) setExists(true);
+    else setExists(false);
+    if (newProfile.avatar) setAvatar(newProfile.avatar);
+    if (newProfile.email) setEmail(newProfile.email);
+    if (newProfile.onBoarded) {
+      setOnBoarded(newProfile.onBoarded);
+    } else {
+      setOnBoarded(new Date().toLocaleDateString("us-en"));
+    }
+  };
+
+  useEffect(() => {
+    globalContext.subscribe("profile", profileHandler);
+
+    return () => {
+      globalContext.unsubscribe("profile", profileHandler);
+    };
+  }, [globalContext]);
+
   const onChangeName = (event) => {
     setNewNickName(event.target.value);
   };
@@ -70,12 +88,12 @@ export const ProfileEdit = (props) => {
     if (exists) {
       setView("profile");
     } else {
-      logout();
+      globalContext.logoutUser();
     }
   };
 
   const saveIt = (event) => {
-    profileContext.setProfile(setProfile, {
+    profileContext.withProfile(setProfile, {
       body: {
         nickName: newNickName,
         email: newEmail,
@@ -83,10 +101,6 @@ export const ProfileEdit = (props) => {
     });
     setView("home");
   };
-
-  if (loading) {
-    return <Loading />;
-  }
 
   return (
     <Typography component="div">
@@ -100,7 +114,7 @@ export const ProfileEdit = (props) => {
               required
               id="name"
               label={NameLabel}
-              defaultValue={nickName}
+              value={nickName}
               onChange={onChangeName}
             />
             <br />
@@ -108,14 +122,14 @@ export const ProfileEdit = (props) => {
               required
               id="email"
               label={EmailLabel}
-              defaultValue={email}
+              value={email}
               onChange={onChangeEmail}
             />
             <br />
             <TextField
               id="onboarded"
               label={DateLabel}
-              defaultValue={new Date(onBoarded).toLocaleDateString("en-US")}
+              value={new Date(onBoarded).toLocaleDateString("en-US")}
               InputProps={{
                 readOnly: true,
               }}

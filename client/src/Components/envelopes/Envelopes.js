@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Typography from "@material-ui/core/Typography";
 import { Grid, IconButton } from "@material-ui/core";
 import DraftsIcon from "@material-ui/icons/Drafts";
@@ -8,6 +8,7 @@ import Dialoger from "../core/Dialoger";
 import { EnvelopeEditor } from "./EnvelopeEditor";
 import { LanguageContext } from "../../Components/locale/LanguageProvider";
 import { ProfileContext } from "../../Components/Profile/ProfileProvider";
+import { GlobalContext } from "../Global/GlobalProvider";
 import { removeEnvelope } from "../../usecases/profile-api.usecase";
 import {
   ExpansionPanel,
@@ -22,14 +23,27 @@ function showTransactions(event) {
 }
 
 export const Envelopes = (props) => {
+  const globalContext = useContext(GlobalContext);
   const T = useContext(LanguageContext).dictionary;
   const profileContext = useContext(ProfileContext);
-  const { envelopes } = profileContext;
+  const [envelopes, setEnvelopes] = useState([]);
   const classes = useStyles();
 
   const [expanded, setExpanded] = useState(false);
   const [removeItem, setRemoveItem] = useState(null);
   const [changeItem, setChangeItem] = useState(null);
+
+  const envelopesHandler = (envelopes) => {
+    if (envelopes) setEnvelopes(envelopes);
+  };
+
+  useEffect(() => {
+    globalContext.subscribe("envelopes", envelopesHandler);
+
+    return () => {
+      globalContext.unsubscribe("envelopes", envelopesHandler);
+    };
+  }, [globalContext]);
 
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -48,7 +62,7 @@ export const Envelopes = (props) => {
   };
 
   const yesRemove = (envelope) => {
-    profileContext.setProfile(removeEnvelope, { body: { id: envelope.id } });
+    profileContext.withProfile(removeEnvelope, { body: { id: envelope.id } });
     setRemoveItem(null);
   };
 
@@ -61,7 +75,7 @@ export const Envelopes = (props) => {
     setChangeItem({});
   };
 
-const buildEnvelopeCard = (envelope, index) => {
+  const buildEnvelopeCard = (envelope, index) => {
     return (
       <SummationPanel
         key={index}

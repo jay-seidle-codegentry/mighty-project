@@ -12,6 +12,11 @@ const envelopeSave = "/api/envelope/save";
 
 export const getProfile = async (params) => {
   const responseData = await fetchIt(host + profile, params);
+  if (responseData.profile) {
+    if (!responseData.profile.avatar) {
+      responseData.profile.avatar = params.avatar;
+    }
+  }
   return responseData;
 };
 
