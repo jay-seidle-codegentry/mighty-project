@@ -77,30 +77,30 @@ userPreferences.set("__default", {
 });
 
 let transactions = [
-  {
-    id: "5efa62d081bc407e2e59d82a",
-    amount: "-105.97",
-    date: "Mon, December 17",
-    description: "VERIZON ONLINE PMT",
-    account: { id: "5ed3b507f717db58968b7a34", title: "Checking Account" },
-    type: "purchase",
-  },
-  {
-    id: "5efa62d081bc407e2e59d82b",
-    amount: "10294.97",
-    date: "Mon, December 17",
-    description: "U-TRADE Direct Deposit",
-    account: { id: "5ed3b507f717db58968b7a34", title: "Checking Account" },
-    type: "deposit",
-  },
-  {
-    id: "5efa62d081bc407e2e59d82c",
-    amount: "-225.47",
-    date: "Mon, December 25",
-    description: "Joe's Meat Farm - Roast Beef",
-    account: { id: "5ed3b507f717db58968b7a34", title: "Checking Account" },
-    type: "purchase",
-  },
+  // {
+  //   id: "5efa62d081bc407e2e59d82a",
+  //   amount: "-105.97",
+  //   date: "Mon, December 17",
+  //   description: "VERIZON ONLINE PMT",
+  //   account: { id: "5ed3b507f717db58968b7a34", title: "Checking Account" },
+  //   type: "purchase",
+  // },
+  // {
+  //   id: "5efa62d081bc407e2e59d82b",
+  //   amount: "10294.97",
+  //   date: "Mon, December 17",
+  //   description: "U-TRADE Direct Deposit",
+  //   account: { id: "5ed3b507f717db58968b7a34", title: "Checking Account" },
+  //   type: "deposit",
+  // },
+  // {
+  //   id: "5efa62d081bc407e2e59d82c",
+  //   amount: "-225.47",
+  //   date: "Mon, December 25",
+  //   description: "Joe's Meat Farm - Roast Beef",
+  //   account: { id: "5ed3b507f717db58968b7a34", title: "Checking Account" },
+  //   type: "purchase",
+  // },
 ];
 
 let user = {
@@ -113,103 +113,103 @@ let user = {
     onBoarded: Date.now,
   },
   accounts: [
-    {
-      id: "5ed3b507f717db58968b7a33",
-      title: "Whoa Thingy",
-      detail: [{ name: "Whoa Thingy", amount: "1325.22" }],
-    },
-    {
-      id: "5ed3b507f717db58968b7a34",
-      title: "Checking Account",
-      detail: [{ name: "Checking Account", amount: "2131.22" }],
-    },
-    {
-      id: "5ed3b507f717db58968b7a35",
-      title: "Savings Account",
-      detail: [{ name: "Savings Account", amount: "901526.22" }],
-    },
-    {
-      id: "5ed3b507f717db58968b7a36",
-      title: "Chase Credit Card",
-      detail: [{ name: "Chase Credit Card", amount: "-995.22" }],
-    },
+    // {
+    //   id: "5ed3b507f717db58968b7a33",
+    //   title: "Whoa Thingy",
+    //   detail: [{ name: "Whoa Thingy", amount: "1325.22" }],
+    // },
+    // {
+    //   id: "5ed3b507f717db58968b7a34",
+    //   title: "Checking Account",
+    //   detail: [{ name: "Checking Account", amount: "2131.22" }],
+    // },
+    // {
+    //   id: "5ed3b507f717db58968b7a35",
+    //   title: "Savings Account",
+    //   detail: [{ name: "Savings Account", amount: "901526.22" }],
+    // },
+    // {
+    //   id: "5ed3b507f717db58968b7a36",
+    //   title: "Chase Credit Card",
+    //   detail: [{ name: "Chase Credit Card", amount: "-995.22" }],
+    // },
   ],
   envelopes: [
-    {
-      id: "5ed3b4adeac42f78ecbdbbf7",
-      title: "Whoa Thingy",
-      detail: [
-        {
-          id: "5ed3b507f717db58968b7a35",
-          name: "Savings Account",
-          amount: "1325.22",
-        },
-        {
-          id: "5ed3b507f717db58968b7a36",
-          name: "Chase Credit Card",
-          amount: "-995.22",
-        },
-      ],
-    },
-    {
-      id: "5ed3b4adeac42f78ecbdbbf8",
-      title: "Rent / Mortgage",
-      detail: [
-        {
-          id: "5ed3b507f717db58968b7a34",
-          name: "Checking Account",
-          amount: "1907.53",
-        },
-      ],
-    },
-    {
-      id: "5ed3b4adeac42f78ecbdbbf9",
-      title: "Utilities",
-      detail: [
-        {
-          id: "5ed3b507f717db58968b7a34",
-          name: "Checking Account",
-          amount: "100.79",
-        },
-        {
-          id: "5ed3b507f717db58968b7a35",
-          name: "Savings Account",
-          amount: "101.00",
-        },
-      ],
-    },
-    {
-      id: "5ed3b4adeac42f78ecbdbbfa",
-      title: "Movies",
-      detail: [
-        {
-          id: "5ed3b507f717db58968b7a34",
-          name: "Checking Account",
-          amount: "22.91",
-        },
-        {
-          id: "5ed3b507f717db58968b7a35",
-          name: "Savings Account",
-          amount: "100.00",
-        },
-      ],
-    },
-    {
-      id: "5ed3b4adeac42f78ecbdbbfb",
-      title: "Emergency Fund",
-      detail: [
-        {
-          id: "5ed3b507f717db58968b7a34",
-          name: "Checking Account",
-          amount: "99.99",
-        },
-        {
-          id: "5ed3b507f717db58968b7a35",
-          name: "Savings Account",
-          amount: "900000.00",
-        },
-      ],
-    },
+    // {
+    //   id: "5ed3b4adeac42f78ecbdbbf7",
+    //   title: "Whoa Thingy",
+    //   detail: [
+    //     {
+    //       id: "5ed3b507f717db58968b7a35",
+    //       name: "Savings Account",
+    //       amount: "1325.22",
+    //     },
+    //     {
+    //       id: "5ed3b507f717db58968b7a36",
+    //       name: "Chase Credit Card",
+    //       amount: "-995.22",
+    //     },
+    //   ],
+    // },
+    // {
+    //   id: "5ed3b4adeac42f78ecbdbbf8",
+    //   title: "Rent / Mortgage",
+    //   detail: [
+    //     {
+    //       id: "5ed3b507f717db58968b7a34",
+    //       name: "Checking Account",
+    //       amount: "1907.53",
+    //     },
+    //   ],
+    // },
+    // {
+    //   id: "5ed3b4adeac42f78ecbdbbf9",
+    //   title: "Utilities",
+    //   detail: [
+    //     {
+    //       id: "5ed3b507f717db58968b7a34",
+    //       name: "Checking Account",
+    //       amount: "100.79",
+    //     },
+    //     {
+    //       id: "5ed3b507f717db58968b7a35",
+    //       name: "Savings Account",
+    //       amount: "101.00",
+    //     },
+    //   ],
+    // },
+    // {
+    //   id: "5ed3b4adeac42f78ecbdbbfa",
+    //   title: "Movies",
+    //   detail: [
+    //     {
+    //       id: "5ed3b507f717db58968b7a34",
+    //       name: "Checking Account",
+    //       amount: "22.91",
+    //     },
+    //     {
+    //       id: "5ed3b507f717db58968b7a35",
+    //       name: "Savings Account",
+    //       amount: "100.00",
+    //     },
+    //   ],
+    // },
+    // {
+    //   id: "5ed3b4adeac42f78ecbdbbfb",
+    //   title: "Emergency Fund",
+    //   detail: [
+    //     {
+    //       id: "5ed3b507f717db58968b7a34",
+    //       name: "Checking Account",
+    //       amount: "99.99",
+    //     },
+    //     {
+    //       id: "5ed3b507f717db58968b7a35",
+    //       name: "Savings Account",
+    //       amount: "900000.00",
+    //     },
+    //   ],
+    // },
   ],
 };
 
@@ -524,7 +524,7 @@ app.post("/api/transactions/import", checkJwt, async (req, res) => {
 
   liveAccount.detail[0].amount = workingAccountBalance;
 
-  handleInboxRequest(req, res);
+  handleInboxRequest(req, res, {accounts: user.accounts});
 });
 
 app.post("/api/transactions/assign", checkJwt, (req, res) => {
